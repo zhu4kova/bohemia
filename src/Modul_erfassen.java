@@ -23,15 +23,12 @@ import javax.swing.Box;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-public class Person_erfassen {
+public class Modul_erfassen {
 
 	private JFrame frame;
 	private JTextField id;
-	private JTextField nachname;
-	private JTextField vorname;
-	private JTextField adresse;
-	private JTextField plz;
-	private JTextField ort;
+	private JTextField kuerzel;
+	private JTextField bezeichnung;
 
 	/**
 	 * Launch the application.
@@ -40,7 +37,7 @@ public class Person_erfassen {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Person_erfassen window = new Person_erfassen();
+					Modul_erfassen window = new Modul_erfassen();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -52,7 +49,7 @@ public class Person_erfassen {
 	/**
 	 * Create the application.
 	 */
-	public Person_erfassen() {
+	public Modul_erfassen() {
 		initialize();
 	}
 
@@ -73,9 +70,9 @@ public class Person_erfassen {
 		menuBar.add(mntmStartseite);
 		frame.getContentPane().setLayout(new MigLayout("", "[100][33.45%][100][50%]", "[39px][60px][30][30][30][30.00][30.00][60.00px][30.00][30.00]"));
 		
-		JLabel lblPerson = new JLabel("Person erfassen");
-		lblPerson.setFont(new Font("Tahoma", Font.BOLD, 24));
-		frame.getContentPane().add(lblPerson, "cell 0 0 2 1,grow");
+		JLabel lblModul = new JLabel("Modul erfassen");
+		lblModul.setFont(new Font("Tahoma", Font.BOLD, 24));
+		frame.getContentPane().add(lblModul, "cell 0 0 2 1,grow");
 		
 		JLabel lblId = new JLabel("ID");
 		frame.getContentPane().add(lblId, "cell 0 2");
@@ -86,56 +83,29 @@ public class Person_erfassen {
 		id.setBackground(new Color(204, 204, 204));
 		frame.getContentPane().add(id, "cell 1 2");
 		
-		JLabel lblNachname = new JLabel("Nachname");
-		frame.getContentPane().add(lblNachname, "cell 0 3");
+		JLabel lblKuerzel = new JLabel("K\u00FCrzel");
+		frame.getContentPane().add(lblKuerzel, "cell 0 3");
 		
-		nachname = new JTextField();
-		nachname.setColumns(50);
-		nachname.setBackground(Color.WHITE);
-		frame.getContentPane().add(nachname, "cell 1 3");
+		kuerzel = new JTextField();
+		kuerzel.setColumns(50);
+		kuerzel.setBackground(Color.WHITE);
+		frame.getContentPane().add(kuerzel, "cell 1 3");
 		
-		JLabel lblVorname = new JLabel("Vorname");
-		frame.getContentPane().add(lblVorname, "cell 2 3");
+		JLabel lblBezeichnung = new JLabel("Bezeichnung");
+		frame.getContentPane().add(lblBezeichnung, "cell 0 4");
 		
-		vorname = new JTextField();
-		vorname.setColumns(50);
-		vorname.setBackground(Color.WHITE);
-		frame.getContentPane().add(vorname, "cell 3 3");
+		bezeichnung = new JTextField();
+		bezeichnung.setColumns(50);
+		bezeichnung.setBackground(Color.WHITE);
+		frame.getContentPane().add(bezeichnung, "cell 1 4 3 1,growx");
 		
-		JLabel lblAdresse = new JLabel("Adresse");
-		frame.getContentPane().add(lblAdresse, "cell 0 4");
-		
-		adresse = new JTextField();
-		adresse.setColumns(50);
-		adresse.setBackground(Color.WHITE);
-		frame.getContentPane().add(adresse, "cell 1 4 3 1,growx");
-		
-		JLabel lblPlz = new JLabel("PLZ");
-		frame.getContentPane().add(lblPlz, "cell 0 5");
-		
-		plz = new JTextField();
-		plz.setColumns(50);
-		plz.setBackground(Color.WHITE);
-		frame.getContentPane().add(plz, "cell 1 5,growx,aligny center");
-		
-		JLabel lblOrt = new JLabel("Ort");
-		frame.getContentPane().add(lblOrt, "cell 2 5");
-		
-		ort = new JTextField();
-		ort.setColumns(50);
-		ort.setBackground(Color.WHITE);
-		frame.getContentPane().add(ort, "cell 3 5,growx,aligny center");
-		
-		JLabel lblLand = new JLabel("Land");
-		frame.getContentPane().add(lblLand, "cell 0 6");
-		
-		JComboBox land = new JComboBox();
-		frame.getContentPane().add(land, "cell 1 6,growx,aligny center");
+		JButton btnModulplneAnsehen = new JButton("Modulpl\u00E4ne ansehen");
+		frame.getContentPane().add(btnModulplneAnsehen, "cell 1 6,growx,aligny center");
 		
 		JButton btnSpeichern = new JButton("Speichern");
 		frame.getContentPane().add(btnSpeichern, "flowx,cell 1 8,alignx left,aligny center");
 		
-		JButton btnSpeichernUndModule = new JButton("Speichern und Module zuweisen");
+		JButton btnSpeichernUndModule = new JButton("Speichern und Literatur zuweisen");
 		frame.getContentPane().add(btnSpeichernUndModule, "cell 1 9,alignx left,aligny center");
 		
 		JButton btnAbbrechen = new JButton("Abbrechen");
