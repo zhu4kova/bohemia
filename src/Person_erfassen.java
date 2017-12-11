@@ -1,5 +1,9 @@
 import java.awt.EventQueue;
-
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.sql.*;
+import javax.swing.JOptionPane;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -133,6 +137,15 @@ public class Person_erfassen {
 		frame.getContentPane().add(land, "cell 1 6,growx,aligny center");
 		
 		JButton btnSpeichern = new JButton("Speichern");
+		btnSpeichern.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					addPersonToDb();
+					// Module zuweisen öffnen (TODO)
+				} catch (SQLException e) {
+				}
+			}
+		});
 		frame.getContentPane().add(btnSpeichern, "flowx,cell 1 8,alignx left,aligny center");
 		
 		JButton btnSpeichernUndModule = new JButton("Speichern und Module zuweisen");
@@ -145,5 +158,50 @@ public class Person_erfassen {
 		});
 		frame.getContentPane().add(btnAbbrechen, "cell 1 8,alignx right,aligny center");
 
+	}
+
+	/*
+	 * Füge die im GUI eingegebenen Daten in die Datenbank hinzu. 
+	 * @author Halil Koca
+	 * @version 1.0
+	 * @param 
+	 * @return
+	 */
+	private void addPersonToDb () throws SQLException  {
+		// Daten auslesen
+			String id_ = id.getText();
+			String nachname_ = nachname.getText();
+			String vorname_ = vorname.getText();
+			String adresse_ = adresse.getText();
+			String plz_ = plz.getText();
+			String ort_ = ort.getText();
+		
+		// Verbindung mit Datenbank herstellen
+			String url = "jdbc:mysql://localhost:3306/bohemia?autoReconnect=true&useSSL=false"; // evtl. anpassen gem. DB-Konfiguration
+	        String username = "root"; // DB-Benutzername
+	        String password = ""; // DB-Passwort	         
+	        
+	        // Überprüfe, ob DB Benutzername und Passwort mitgegeben werden! 
+	        	if (username == "" || password == "") {
+	        		JOptionPane.showMessageDialog(null, "DB username or password is missing!");
+	        		return;
+	        	}
+
+	        try (Connection connection = DriverManager.getConnection(url, username, password)) {
+	        	//Erstelle neues Statement
+	        	Statement st = connection.createStatement();
+	        	
+	        	// Aufbau SQL-Befehl
+		        	try { 
+		        		st.executeUpdate("INSERT INTO student  " + "VALUES (10, '"+nachname_+"', '"+ vorname_+"', '"+ adresse_+"', '" + plz_ + "', '"+ ort_+ "', 1" + ")");
+		        	}
+		        	catch (SQLException e) {
+		        		String error = e.getLocalizedMessage();
+		        		JOptionPane.showMessageDialog(null, error);
+		        	}
+	        	
+	        } catch (SQLException e) {
+	        	JOptionPane.showMessageDialog(null, "Cannot connect to DB!");
+	        }
 	}
 }

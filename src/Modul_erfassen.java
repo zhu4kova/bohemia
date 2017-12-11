@@ -3,6 +3,7 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.BoxLayout;
 import java.awt.BorderLayout;
 import javax.swing.JLabel;
@@ -21,6 +22,10 @@ import java.awt.Toolkit;
 import java.awt.Component;
 import javax.swing.Box;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.awt.event.ActionEvent;
 
 public class Modul_erfassen {
@@ -103,9 +108,26 @@ public class Modul_erfassen {
 		frame.getContentPane().add(btnModulplneAnsehen, "cell 1 6,growx,aligny center");
 		
 		JButton btnSpeichern = new JButton("Speichern");
+		btnSpeichern.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					addModulToDb();
+				} catch (SQLException e) {
+				}
+			}
+		});
 		frame.getContentPane().add(btnSpeichern, "flowx,cell 1 8,alignx left,aligny center");
 		
 		JButton btnSpeichernUndModule = new JButton("Speichern und Literatur zuweisen");
+		btnSpeichernUndModule.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					addModulToDb();
+					// Module zuweisen öffnen (TODO)
+				} catch (SQLException e) {
+				}
+			}
+		});
 		frame.getContentPane().add(btnSpeichernUndModule, "cell 1 9,alignx left,aligny center");
 		
 		JButton btnAbbrechen = new JButton("Abbrechen");
@@ -115,5 +137,49 @@ public class Modul_erfassen {
 		});
 		frame.getContentPane().add(btnAbbrechen, "cell 1 8,alignx right,aligny center");
 
+	}
+	/*
+	 * Füge die im GUI eingegebenen Daten in die Datenbank hinzu. 
+	 * @author Halil Koca
+	 * @version 1.0
+	 * @param 
+	 * @return
+	 */
+	private void addModulToDb () throws SQLException  {
+		
+		// Daten auslesen
+			String id_ = id.getText();
+			String kuerzel_ = kuerzel.getText();
+			String bezeichnung_ = bezeichnung.getText();
+		
+		// Verbindung mit Datenbank herstellen
+			String url = "jdbc:mysql://localhost:3306/bohemia?autoReconnect=true&useSSL=false"; // evtl. anpassen gem. DB-Konfiguration
+	        String username = "root"; // DB-Benutzername
+	        String password = "sivasli58"; // DB-Passwort	         
+	        
+	        // Überprüfe, ob DB Benutzername und Passwort mitgegeben werden! 
+	        	if (username == "" || password == "") {
+	        		JOptionPane.showMessageDialog(null, "DB username or password is missing!");
+	        		return;
+	        	}
+	        	JOptionPane.showMessageDialog(null, "1");
+	        try (Connection connection = DriverManager.getConnection(url, username, password)) {
+	        	JOptionPane.showMessageDialog(null, "2");
+	        	//Erstelle neues Statement
+	        	Statement st = connection.createStatement();
+	        	JOptionPane.showMessageDialog(null, "3");
+	        	// Aufbau SQL-Befehl
+		        	try { 
+		        		st.executeUpdate("INSERT INTO modul  " + "VALUES (8, '"+ kuerzel_ +"', '"+ bezeichnung_ + "')");
+		        		JOptionPane.showMessageDialog(null, "4");
+		        	}
+		        	catch (SQLException e) {
+		        		String error = e.getLocalizedMessage();
+		        		JOptionPane.showMessageDialog(null, error);
+		        	}
+	        	
+	        } catch (SQLException e) {
+	        	JOptionPane.showMessageDialog(null, "Cannot connect to DB!");
+	        }
 	}
 }

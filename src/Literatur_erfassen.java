@@ -3,6 +3,7 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.BoxLayout;
 import java.awt.BorderLayout;
 import javax.swing.JLabel;
@@ -21,6 +22,10 @@ import java.awt.Toolkit;
 import java.awt.Component;
 import javax.swing.Box;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.awt.event.ActionEvent;
 import javax.swing.JPanel;
 
@@ -30,9 +35,10 @@ public class Literatur_erfassen {
 	private JTextField textId;
 	private JTextField isbn;
 	private JTextField titel;
+	private JTextField autor;
 	private JTextField auflage;
 	private JTextField herausgeber;
-
+	private JComboBox jahr;
 	/**
 	 * Launch the application.
 	 */
@@ -105,7 +111,7 @@ public class Literatur_erfassen {
 		JLabel lblAutor = new JLabel("Autor");
 		frame.getContentPane().add(lblAutor, "cell 0 5");
 		
-		JTextField autor = new JTextField();
+		autor = new JTextField();
 		autor.setColumns(50);
 		autor.setBackground(Color.WHITE);
 		frame.getContentPane().add(autor, "cell 1 5 3 1,growx,aligny center");
@@ -128,10 +134,18 @@ public class Literatur_erfassen {
 		JLabel lblJahr = new JLabel("Jahr");
 		frame.getContentPane().add(lblJahr, "cell 2 7,alignx trailing");
 		
-		JComboBox jahr = new JComboBox();
+		jahr = new JComboBox();
 		frame.getContentPane().add(jahr, "cell 3 7,growx,aligny center");
 		
 		JButton btnSpeichern = new JButton("Speichern");
+		btnSpeichern.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					addLiteraturToDb();
+				} catch (SQLException e) {
+				}
+			}
+		});
 		frame.getContentPane().add(btnSpeichern, "flowx,cell 1 9,alignx left,aligny center");
 		
 		JButton btnAbbrechen = new JButton("Abbrechen");
@@ -142,4 +156,48 @@ public class Literatur_erfassen {
 		frame.getContentPane().add(btnAbbrechen, "cell 1 9,alignx right,aligny center");
 
 	}
+	/*
+	 * Füge die im GUI eingegebenen Daten in die Datenbank hinzu. 
+	 * @author Halil Koca
+	 * @version 1.0
+	 * @param 
+	 * @return
+	 */
+	private void addLiteraturToDb () throws SQLException  {
+		
+		// Daten auslesen
+			String id_ = textId.getText();
+			String isbn_ = isbn.getText();
+			String titel_ = titel.getText();
+			String autor_ = autor.getText();
+			String auflage_ = auflage.getText();
+			String herausgeber_ = herausgeber.getText();
+		
+		// Verbindung mit Datenbank herstellen
+			String url = "jdbc:mysql://localhost:3306/bohemia?autoReconnect=true&useSSL=false"; // evtl. anpassen gem. DB-Konfiguration
+	        String username = "root"; // DB-Benutzername
+	        String password = ""; // DB-Passwort	         
+	        
+	        // Überprüfe, ob DB Benutzername und Passwort mitgegeben werden! 
+	        	if (username == "" || password == "") {
+	        		JOptionPane.showMessageDialog(null, "DB username or password is missing!");
+	        		return;
+	        	}
+	        try (Connection connection = DriverManager.getConnection(url, username, password)) {
+	        	//Erstelle neues Statement
+	        	Statement st = connection.createStatement();
+	        	// Aufbau SQL-Befehl
+		        	try { 
+		        		st.executeUpdate("INSERT INTO literatur  " + "VALUES (2, '"+titel_+"', '"+ autor_+"', '"+ isbn_+"', '" + herausgeber_ +"', '"+ auflage_+ "', 2017)");
+		        	}
+		        	catch (SQLException e) {
+		        		String error = e.getLocalizedMessage();
+		        		JOptionPane.showMessageDialog(null, error);
+		        	}
+	        	
+	        } catch (SQLException e) {
+	        	JOptionPane.showMessageDialog(null, "Cannot connect to DB!");
+	        }
+	}
+
 }
