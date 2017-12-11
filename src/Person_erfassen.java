@@ -18,10 +18,13 @@ import javax.swing.JComboBox;
 import javax.swing.JButton;
 import java.awt.Color;
 import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.Component;
 import javax.swing.Box;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 
 public class Person_erfassen {
 
@@ -32,6 +35,7 @@ public class Person_erfassen {
 	private JTextField adresse;
 	private JTextField plz;
 	private JTextField ort;
+	private final Action action = new SwingAction();
 
 	/**
 	 * Launch the application.
@@ -139,11 +143,30 @@ public class Person_erfassen {
 		frame.getContentPane().add(btnSpeichernUndModule, "cell 1 9,alignx left,aligny center");
 		
 		JButton btnAbbrechen = new JButton("Abbrechen");
+		btnAbbrechen.setAction(action);
 		btnAbbrechen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				Startseite window = new Startseite();
+				window.getFrame().setVisible(true);
 			}
 		});
 		frame.getContentPane().add(btnAbbrechen, "cell 1 8,alignx right,aligny center");
 
+	}
+	private class SwingAction extends AbstractAction {
+		public SwingAction() {
+			putValue(NAME, "Abbrechen");
+			putValue(SHORT_DESCRIPTION, "Abbrechen und zurück zur Startseite wechseln.");
+		}
+		public void actionPerformed(ActionEvent e) {
+		}
+	}
+	
+	public JFrame getPersonErfassenFrame() {
+		return frame;
+	}
+
+	public void setPersonErfassenFrame(JFrame frame) {
+		this.frame = frame;
 	}
 }
