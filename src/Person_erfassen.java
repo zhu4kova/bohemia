@@ -61,7 +61,7 @@ public class Person_erfassen {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setIconImage(Toolkit.getDefaultToolkit().getImage("C:\\Users\\annaz\\Pictures\\logo@2x.png"));
+		frame.setIconImage(Toolkit.getDefaultToolkit().getImage(Person_erfassen.class.getResource("/Bilder/logo@2x.png")));
 		frame.setBackground(Color.LIGHT_GRAY);
 		frame.setBounds(100, 100, 591, 483);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

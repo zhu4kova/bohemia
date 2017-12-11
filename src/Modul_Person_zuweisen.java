@@ -57,7 +57,7 @@ public class Modul_Person_zuweisen {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setIconImage(Toolkit.getDefaultToolkit().getImage("C:\\Users\\annaz\\Pictures\\logo@2x.png"));
+		frame.setIconImage(Toolkit.getDefaultToolkit().getImage(Modul_Person_zuweisen.class.getResource("/Bilder/logo@2x.png")));
 		frame.setBackground(Color.LIGHT_GRAY);
 		frame.setBounds(100, 100, 591, 483);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

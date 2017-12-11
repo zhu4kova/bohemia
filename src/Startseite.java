@@ -58,7 +58,7 @@ public class Startseite {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setIconImage(Toolkit.getDefaultToolkit().getImage("C:\\Users\\annaz\\Pictures\\logo@2x.png"));
+		frame.setIconImage(Toolkit.getDefaultToolkit().getImage(Startseite.class.getResource("/Bilder/logo@2x.png")));
 		frame.setBackground(Color.LIGHT_GRAY);
 		frame.setBounds(100, 100, 591, 483);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -83,21 +83,21 @@ public class Startseite {
 		btnPersonErfassen.setBackground(UIManager.getColor("Button.background"));
 		btnPersonErfassen.setForeground(new Color(178, 34, 34));
 		btnPersonErfassen.setFont(new Font("Tahoma", Font.BOLD, 11));
-		btnPersonErfassen.setIcon(new ImageIcon("C:\\Users\\annaz\\Downloads\\verification (2).png"));
+		btnPersonErfassen.setIcon(new ImageIcon(Startseite.class.getResource("/Bilder/verification (2).png")));
 		frame.getContentPane().add(btnPersonErfassen, "cell 0 1,grow");
 		
 		JButton btnNewButton = new JButton("Modul erfassen");
 		btnNewButton.setFont(new Font("Tahoma", Font.BOLD, 11));
 		btnNewButton.setBackground(UIManager.getColor("Button.background"));
 		btnNewButton.setForeground(new Color(178, 34, 34));
-		btnNewButton.setIcon(new ImageIcon("C:\\Users\\annaz\\Downloads\\science-book (1).png"));
+		btnNewButton.setIcon(new ImageIcon(Startseite.class.getResource("/Bilder/science-book (1).png")));
 		frame.getContentPane().add(btnNewButton, "cell 3 1,grow");
 		
 		JButton btnLiteraturErfassen = new JButton("Literatur erfassen");
 		btnLiteraturErfassen.setBackground(UIManager.getColor("Button.background"));
 		btnLiteraturErfassen.setFont(new Font("Tahoma", Font.BOLD, 11));
 		btnLiteraturErfassen.setForeground(new Color(178, 34, 34));
-		btnLiteraturErfassen.setIcon(new ImageIcon("C:\\Users\\annaz\\Downloads\\library (1).png"));
+		btnLiteraturErfassen.setIcon(new ImageIcon(Startseite.class.getResource("/Bilder/library (1).png")));
 		frame.getContentPane().add(btnLiteraturErfassen, "cell 0 2,grow");
 
 	}
