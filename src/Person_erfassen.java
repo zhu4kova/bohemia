@@ -23,6 +23,8 @@ import javax.swing.JButton;
 import java.awt.Color;
 import java.awt.Toolkit;
 import java.awt.Component;
+
+import javax.swing.AbstractAction;
 import javax.swing.Box;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -154,10 +156,18 @@ public class Person_erfassen {
 		JButton btnAbbrechen = new JButton("Abbrechen");
 		btnAbbrechen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				Startseite window = new Startseite();
+				window.getStartseite().setVisible(true);
 			}
 		});
-		frame.getContentPane().add(btnAbbrechen, "cell 1 8,alignx right,aligny center");
+		frame.getContentPane().add(btnAbbrechen, "flowx,cell 1 8,alignx right,aligny center");
+	}
+	public JFrame getPersonErfassenFrame() {
+		return frame;
+	}
 
+	public void setPersonErfassenFrame(JFrame frame) {
+		this.frame = frame;
 	}
 
 	/*

@@ -27,7 +27,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.awt.event.ActionEvent;
-import javax.swing.JPanel;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 
 public class Literatur_erfassen {
 
@@ -151,10 +152,19 @@ public class Literatur_erfassen {
 		JButton btnAbbrechen = new JButton("Abbrechen");
 		btnAbbrechen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				Startseite window = new Startseite();
+				window.getStartseite().setVisible(true);
 			}
 		});
-		frame.getContentPane().add(btnAbbrechen, "cell 1 9,alignx right,aligny center");
+		frame.getContentPane().add(btnAbbrechen, "flowx,cell 1 9,alignx right,aligny center");
 
+	}
+	public JFrame getLiteraturErfassenFrame() {
+		return frame;
+	}
+
+	public void setLiteraturErfassenFrame(JFrame frame) {
+		this.frame = frame;
 	}
 	/*
 	 * Füge die im GUI eingegebenen Daten in die Datenbank hinzu. 

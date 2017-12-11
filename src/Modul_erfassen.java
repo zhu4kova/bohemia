@@ -27,6 +27,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.awt.event.ActionEvent;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 
 public class Modul_erfassen {
 
@@ -133,10 +135,19 @@ public class Modul_erfassen {
 		JButton btnAbbrechen = new JButton("Abbrechen");
 		btnAbbrechen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				Startseite window = new Startseite();
+				window.getStartseite().setVisible(true);
 			}
 		});
 		frame.getContentPane().add(btnAbbrechen, "cell 1 8,alignx right,aligny center");
 
+	}
+	public JFrame getModulErfassenFrame() {
+		return frame;
+	}
+
+	public void setModulErfassenFrame(JFrame frame) {
+		this.frame = frame;
 	}
 	/*
 	 * Füge die im GUI eingegebenen Daten in die Datenbank hinzu. 
@@ -183,3 +194,4 @@ public class Modul_erfassen {
 	        }
 	}
 }
+

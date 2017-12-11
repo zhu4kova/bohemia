@@ -18,6 +18,7 @@ import javax.swing.JComboBox;
 import javax.swing.JButton;
 import java.awt.Color;
 import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.Component;
 import javax.swing.Box;
 import java.awt.event.ActionListener;
@@ -25,6 +26,11 @@ import java.awt.event.ActionEvent;
 import javax.swing.ImageIcon;
 import java.awt.SystemColor;
 import javax.swing.UIManager;
+import javax.swing.SwingConstants;
+import javax.swing.JPopupMenu;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.JCheckBoxMenuItem;
 
 public class Startseite {
 
@@ -58,47 +64,83 @@ public class Startseite {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setIconImage(Toolkit.getDefaultToolkit().getImage("C:\\Users\\annaz\\Pictures\\logo@2x.png"));
+		frame.setIconImage(Toolkit.getDefaultToolkit().getImage(Startseite.class.getResource("/Bilder/logo@2x.png")));
 		frame.setBackground(Color.LIGHT_GRAY);
 		frame.setBounds(100, 100, 591, 483);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		JMenuBar menuBar = new JMenuBar();
-		frame.setJMenuBar(menuBar);
-		
-		JMenuItem mntmStartseite = new JMenuItem("Startseite");
-		menuBar.add(mntmStartseite);
-		frame.getContentPane().setLayout(new MigLayout("", "[50%][33.45%][100][50%]", "[88.00px][66.00][107.00][60.00px][30.00]"));
+		frame.getContentPane().setLayout(new MigLayout("", "[50%][100][50%]", "[88.00px][][][][30.00]"));
 		
 		JLabel lblWillkommen = new JLabel("Bohemia - Literaturverwaltung");
 		lblWillkommen.setForeground(new Color(178, 34, 34));
 		lblWillkommen.setFont(new Font("Arial", Font.BOLD, 24));
-		frame.getContentPane().add(lblWillkommen, "cell 0 0 4 1");
+		frame.getContentPane().add(lblWillkommen, "cell 0 0 3 1");
 		
+		/*
+		 * Button zur Erfassungsmaske einer Person
+		*/
 		JButton btnPersonErfassen = new JButton("Person erfassen");
+		btnPersonErfassen.setFocusPainted(false);
+		btnPersonErfassen.setHorizontalAlignment(SwingConstants.LEFT);
+		btnPersonErfassen.setIconTextGap(30);
 		btnPersonErfassen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				Person_erfassen window = new Person_erfassen();
+				window.getPersonErfassenFrame().setVisible(true);
 			}
 		});
-		btnPersonErfassen.setBackground(UIManager.getColor("Button.background"));
+		btnPersonErfassen.setBackground(new Color(192, 192, 192));
 		btnPersonErfassen.setForeground(new Color(178, 34, 34));
 		btnPersonErfassen.setFont(new Font("Tahoma", Font.BOLD, 11));
-		btnPersonErfassen.setIcon(new ImageIcon("C:\\Users\\annaz\\Downloads\\verification (2).png"));
+		btnPersonErfassen.setIcon(new ImageIcon(Startseite.class.getResource("/Bilder/online-student.png")));
 		frame.getContentPane().add(btnPersonErfassen, "cell 0 1,grow");
 		
-		JButton btnNewButton = new JButton("Modul erfassen");
-		btnNewButton.setFont(new Font("Tahoma", Font.BOLD, 11));
-		btnNewButton.setBackground(UIManager.getColor("Button.background"));
-		btnNewButton.setForeground(new Color(178, 34, 34));
-		btnNewButton.setIcon(new ImageIcon("C:\\Users\\annaz\\Downloads\\science-book (1).png"));
-		frame.getContentPane().add(btnNewButton, "cell 3 1,grow");
+		/*
+		 * Button zur Erfassungsmaske einer Literatur
+		*/
 		
 		JButton btnLiteraturErfassen = new JButton("Literatur erfassen");
-		btnLiteraturErfassen.setBackground(UIManager.getColor("Button.background"));
+		btnLiteraturErfassen.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				Literatur_erfassen window = new Literatur_erfassen();
+				window.getLiteraturErfassenFrame().setVisible(true);
+			}
+		});
+		btnLiteraturErfassen.setFocusPainted(false);
+		btnLiteraturErfassen.setHorizontalAlignment(SwingConstants.LEFT);
+		btnLiteraturErfassen.setIconTextGap(30);
+		btnLiteraturErfassen.setBackground(new Color(192, 192, 192));
 		btnLiteraturErfassen.setFont(new Font("Tahoma", Font.BOLD, 11));
 		btnLiteraturErfassen.setForeground(new Color(178, 34, 34));
-		btnLiteraturErfassen.setIcon(new ImageIcon("C:\\Users\\annaz\\Downloads\\library (1).png"));
+		btnLiteraturErfassen.setIcon(new ImageIcon(Startseite.class.getResource("/Bilder/books-stack.png")));
 		frame.getContentPane().add(btnLiteraturErfassen, "cell 0 2,grow");
+		
+		/*
+		 * Button zur Erfassungsmaske eines Moduls
+		*/
+		
+		JButton btnModulErfassen = new JButton("Modul erfassen");
+		btnModulErfassen.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				Modul_erfassen window = new Modul_erfassen();
+				window.getModulErfassenFrame().setVisible(true);
+			}
+		});
+		btnModulErfassen.setFocusPainted(false);
+		btnModulErfassen.setIconTextGap(30);
+		btnModulErfassen.setHorizontalAlignment(SwingConstants.LEFT);
+		btnModulErfassen.setFont(new Font("Tahoma", Font.BOLD, 11));
+		btnModulErfassen.setBackground(new Color(192, 192, 192));
+		btnModulErfassen.setForeground(new Color(178, 34, 34));
+		btnModulErfassen.setIcon(new ImageIcon(Startseite.class.getResource("/Bilder/internet-education-graduation.png")));
+		frame.getContentPane().add(btnModulErfassen, "cell 0 3,grow");
 
+	}
+	
+	public JFrame getStartseite() {
+		return frame;
+	}
+
+	public void setStartseite(JFrame frame) {
+		this.frame = frame;
 	}
 }
