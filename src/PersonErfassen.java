@@ -10,6 +10,8 @@ import javax.swing.border.EmptyBorder;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.Statement;
+import java.sql.Connection;
 import java.sql.SQLException;
 
 import net.miginfocom.swing.MigLayout;
@@ -19,6 +21,7 @@ import javax.swing.JTextField;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.ImageIcon;
 import javax.swing.JSeparator;
 
@@ -276,6 +279,52 @@ public class PersonErfassen extends JFrame {
 
 	public void setLand(JComboBox<?> land) {
 		this.land = land;
+	}
+	
+
+	/*
+	 * Füge die im GUI eingegebenen Daten in die Datenbank hinzu. 
+	 * @author Halil Koca
+	 * @version 1.0
+	 * @param 
+	 * @return
+	 */
+	private void addPersonToDb () throws SQLException  {
+		// Daten auslesen
+			String id_ = id.getText();
+			String nachname_ = nachname.getText();
+			String vorname_ = vorname.getText();
+			String adresse_ = adresse.getText();
+			String plz_ = plz.getText();
+			String ort_ = ort.getText();
+		
+		// Verbindung mit Datenbank herstellen
+			String url = "jdbc:mysql://localhost:3306/bohemia?autoReconnect=true&useSSL=false"; // evtl. anpassen gem. DB-Konfiguration
+	        String username = "root"; // DB-Benutzername
+	        String password = ""; // DB-Passwort	         
+	        
+	        // Überprüfe, ob DB Benutzername und Passwort mitgegeben werden! 
+	        	if (username == "" || password == "") {
+	        		JOptionPane.showMessageDialog(null, "DB username or password is missing!");
+	        		return;
+	        	}
+
+	        try (Connection connection = DriverManager.getConnection(url, username, password)) {
+	        	//Erstelle neues Statement
+	        	Statement st = connection.createStatement();
+	        	
+	        	// Aufbau SQL-Befehl
+		        	try { 
+		        		st.executeUpdate("INSERT INTO student  " + "VALUES (10, '"+nachname_+"', '"+ vorname_+"', '"+ adresse_+"', '" + plz_ + "', '"+ ort_+ "', 1" + ")");
+		        	}
+		        	catch (SQLException e) {
+		        		String error = e.getLocalizedMessage();
+		        		JOptionPane.showMessageDialog(null, error);
+		        	}
+	        	
+	        } catch (SQLException e) {
+	        	JOptionPane.showMessageDialog(null, "Cannot connect to DB!");
+	        }
 	}
 
 }
