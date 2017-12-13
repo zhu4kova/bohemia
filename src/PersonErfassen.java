@@ -144,8 +144,12 @@ public class PersonErfassen extends JFrame {
 		
 		JMenuItem mntmFlligeLiteraturbestellungen = new JMenuItem("F\u00E4llige Literaturbestellungen");
 		mntmFlligeLiteraturbestellungen.setSelectedIcon(new ImageIcon(PersonErfassen.class.getResource("/Bilder/books-stack.png")));
-		mntmFlligeLiteraturbestellungen.setIcon(null);
+		mntmFlligeLiteraturbestellungen.setIcon(new ImageIcon(PersonErfassen.class.getResource("/Bilder/schedule_small.png")));
 		mnAuswertung.add(mntmFlligeLiteraturbestellungen);
+		
+		JMenu mnHelp = new JMenu("Help");
+		mnHelp.setIcon(new ImageIcon(PersonErfassen.class.getResource("/Bilder/question-mark_small.png")));
+		menuBar.add(mnHelp);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -173,7 +177,7 @@ public class PersonErfassen extends JFrame {
 		/*
 		 * Eingabe für Nachname
 		 */
-		JLabel lblNachname = new JLabel("Nachname");
+		JLabel lblNachname = new JLabel("Nachname *");
 		contentPane.add(lblNachname, "cell 0 3");
 		
 		nachname = new JTextField();
@@ -185,7 +189,7 @@ public class PersonErfassen extends JFrame {
 		 * Eingabe für Vorname
 		 */
 		
-		JLabel lblVorname = new JLabel("Vorname");
+		JLabel lblVorname = new JLabel("Vorname *");
 		contentPane.add(lblVorname, "cell 2 3");
 		
 		vorname = new JTextField();
@@ -271,6 +275,9 @@ public class PersonErfassen extends JFrame {
 			}
 		});
 		contentPane.add(btnAbbrechen, "flowx,cell 1 8,alignx right,aligny center");
+		
+		JLabel lblMussfelder = new JLabel("* Mussfelder");
+		contentPane.add(lblMussfelder, "cell 3 9");
 	}
 
 	public JComboBox<?> getLand() {

@@ -13,10 +13,13 @@ import javax.swing.SwingConstants;
 
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JMenu;
 import javax.swing.UIManager;
 import javax.swing.border.SoftBevelBorder;
 import javax.swing.border.BevelBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.JPanel;
 
 public class Bohemia {
 
@@ -54,7 +57,12 @@ public class Bohemia {
 		frmBohemiaLiteraturverwaltung.setIconImage(Toolkit.getDefaultToolkit().getImage(Bohemia.class.getResource("/Bilder/FFHS_logo.png")));
 		frmBohemiaLiteraturverwaltung.setBounds(100, 100, 712, 450);
 		frmBohemiaLiteraturverwaltung.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frmBohemiaLiteraturverwaltung.getContentPane().setLayout(new MigLayout("", "[50%][100][50%]", "[88.00px][][][][30.00]"));
+		frmBohemiaLiteraturverwaltung.getContentPane().setLayout(new MigLayout("", "[50%][100][50%,grow]", "[88.00px][][][][30.00][][][grow]"));
+		
+		/*
+		 * Menue Bar mit Verlinkungen zu anderen Menuepunkten
+		 */
+
 		
 		
 		/*
@@ -63,7 +71,7 @@ public class Bohemia {
 		JLabel lblWillkommen = new JLabel("Bohemia - Literaturverwaltung");
 		lblWillkommen.setForeground(new Color(178, 34, 34));
 		lblWillkommen.setFont(new Font("Arial", Font.BOLD, 24));
-		frmBohemiaLiteraturverwaltung.getContentPane().add(lblWillkommen, "cell 0 0 3 1");
+		frmBohemiaLiteraturverwaltung.getContentPane().add(lblWillkommen, "flowx,cell 0 0 3 1");
 		
 		/*
 		 * Button zur Erfassungsmaske einer Person
@@ -175,6 +183,30 @@ public class Bohemia {
 		btnLiteraturModulzuweisen.setBackground(new Color(211, 211, 211));
 		
 		frmBohemiaLiteraturverwaltung.getContentPane().add(btnLiteraturModulzuweisen, "cell 2 2,grow");
+		
+		JButton btnAuswertungLitBestellen = new JButton("Auswertung zu bestellende Literatur");
+		btnAuswertungLitBestellen.setFont(new Font("Tahoma", Font.BOLD, 11));
+		btnAuswertungLitBestellen.setBorder(null);
+		btnAuswertungLitBestellen.setBackground(new Color(211, 211, 211));
+		btnAuswertungLitBestellen.setForeground(new Color(178, 34, 34));
+		btnAuswertungLitBestellen.setIconTextGap(30);
+		btnAuswertungLitBestellen.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				frmBohemiaLiteraturverwaltung.dispose();
+				AuswertungLitBestellen ALB = new AuswertungLitBestellen();
+				ALB.setVisible(true);
+			}
+		});
+		btnAuswertungLitBestellen.setHorizontalAlignment(SwingConstants.LEFT);
+		btnAuswertungLitBestellen.setFocusPainted(false);
+		btnAuswertungLitBestellen.setIcon(new ImageIcon(Bohemia.class.getResource("/Bilder/schedule.png")));
+		frmBohemiaLiteraturverwaltung.getContentPane().add(btnAuswertungLitBestellen, "cell 2 3,grow");
+		
+		JLabel lblHelp = new JLabel(" ");
+		lblHelp.setIconTextGap(15);
+		lblHelp.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblHelp.setIcon(new ImageIcon(Bohemia.class.getResource("/Bilder/question-mark.png")));
+		frmBohemiaLiteraturverwaltung.getContentPane().add(lblHelp, "cell 2 0,grow");
 		
 	}
 

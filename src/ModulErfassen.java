@@ -1,11 +1,13 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Desktop;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.Statement;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -36,7 +38,7 @@ public class ModulErfassen extends JFrame {
 
 	/**
 	 * Launch the application.
-	 */
+	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -48,7 +50,7 @@ public class ModulErfassen extends JFrame {
 				}
 			}
 		});
-	}
+	} */
 
 	/**
 	 * Create the frame.
@@ -138,8 +140,12 @@ public class ModulErfassen extends JFrame {
 	
 	JMenuItem mntmFlligeLiteraturbestellungen = new JMenuItem("F\u00E4llige Literaturbestellungen");
 	mntmFlligeLiteraturbestellungen.setSelectedIcon(new ImageIcon(PersonErfassen.class.getResource("/Bilder/books-stack.png")));
-	mntmFlligeLiteraturbestellungen.setIcon(null);
+	mntmFlligeLiteraturbestellungen.setIcon(new ImageIcon(ModulErfassen.class.getResource("/Bilder/schedule_small.png")));
 	mnAuswertung.add(mntmFlligeLiteraturbestellungen);
+	
+	JMenu menu = new JMenu("Help");
+	menu.setIcon(new ImageIcon(ModulErfassen.class.getResource("/Bilder/question-mark_small.png")));
+	menuBar.add(menu);
 	contentPane = new JPanel();
 	contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 	setContentPane(contentPane);
@@ -171,7 +177,7 @@ public class ModulErfassen extends JFrame {
 	 * Feld fuer Eingabe des Modul Kuerzels
 	 */
 	
-	JLabel lblKuerzel = new JLabel("K\u00FCrzel");
+	JLabel lblKuerzel = new JLabel("K\u00FCrzel *");
 	contentPane.add(lblKuerzel, "cell 0 3");
 	
 	kuerzel = new JTextField();
@@ -183,7 +189,7 @@ public class ModulErfassen extends JFrame {
 	 * Feld fuer Eingabe der Modul Bezeichnung
 	 */
 	
-	JLabel lblBezeichnung = new JLabel("Bezeichnung");
+	JLabel lblBezeichnung = new JLabel("Bezeichnung *");
 	contentPane.add(lblBezeichnung, "cell 0 4");
 	
 	bezeichnung = new JTextField();
@@ -203,6 +209,21 @@ public class ModulErfassen extends JFrame {
 			}
 		}
 	});
+	
+	JButton btnModullisteOnlineAbrufen = new JButton("Modulliste online abrufen");
+	btnModullisteOnlineAbrufen.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent arg0) {
+			    try {
+			        Desktop.getDesktop().browse(new URL("https://moodle.ffhs.ch/course/view.php?id=3").toURI());
+			    } catch (Exception e) {
+			        e.printStackTrace();
+			    }
+		}
+	});
+	btnModullisteOnlineAbrufen.setFocusPainted(false);
+	btnModullisteOnlineAbrufen.setSelectedIcon(new ImageIcon(ModulErfassen.class.getResource("/Bilder/FFHS_logo.png")));
+	btnModullisteOnlineAbrufen.setIcon(null);
+	contentPane.add(btnModullisteOnlineAbrufen, "cell 1 6");
 	contentPane.add(btnSpeichern, "flowx,cell 1 8,alignx left,aligny center");
 
 	
@@ -218,6 +239,9 @@ public class ModulErfassen extends JFrame {
 		}
 	});
 	contentPane.add(btnAbbrechen, "cell 1 8,alignx right,aligny center");
+	
+	JLabel label = new JLabel("* Mussfelder");
+	contentPane.add(label, "cell 2 8 2 1");
 	
 	}
 	

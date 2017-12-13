@@ -28,7 +28,7 @@ public class LiteraturModulzuweisen extends JFrame {
 
 	/**
 	 * Launch the application.
-	 */
+	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -40,15 +40,15 @@ public class LiteraturModulzuweisen extends JFrame {
 				}
 			}
 		});
-	}
+	} */
 
 	/**
 	 * Create the frame.
 	 */
 	public LiteraturModulzuweisen() {
-		setName("PersonErfassen");
+		setName("LiteraturModulzuweisen");
 		setIconImage(Toolkit.getDefaultToolkit().getImage(LiteraturModulzuweisen.class.getResource("/Bilder/FFHS_logo.png")));
-		setTitle("Person erfassen");
+		setTitle("Literatur zu Modul zuweisen");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 712, 450);
 		
@@ -78,11 +78,11 @@ public class LiteraturModulzuweisen extends JFrame {
 				PersErf.setVisible(true);
 			}
 		});
-		mntmPersonErfassen.setIcon(new ImageIcon(ModulErfassen.class.getResource("/Bilder/online-student_small.png")));
+		mntmPersonErfassen.setIcon(new ImageIcon(LiteraturModulzuweisen.class.getResource("/Bilder/online-student_small.png")));
 		mntmPersonErfassen.setSelectedIcon(null);
 		mntmPersonErfassen.setSelected(true);
 		mnErfassung.add(mntmPersonErfassen);
-		mntmModulErfassen.setIcon(new ImageIcon(ModulErfassen.class.getResource("/Bilder/internet-education-graduation_small.png")));
+		mntmModulErfassen.setIcon(new ImageIcon(LiteraturModulzuweisen.class.getResource("/Bilder/internet-education-graduation_small.png")));
 		mnErfassung.add(mntmModulErfassen);
 		
 		JMenuItem mntmLiteraturErfassen = new JMenuItem("Literatur erfassen");
@@ -93,7 +93,7 @@ public class LiteraturModulzuweisen extends JFrame {
 				LitErf.setVisible(true);
 			}
 		});
-		mntmLiteraturErfassen.setIcon(new ImageIcon(ModulErfassen.class.getResource("/Bilder/books-stack_small.png")));
+		mntmLiteraturErfassen.setIcon(new ImageIcon(LiteraturModulzuweisen.class.getResource("/Bilder/books-stack_small.png")));
 		mnErfassung.add(mntmLiteraturErfassen);
 		
 		JMenu mnZuweisung = new JMenu("Zuweisung");
@@ -119,16 +119,26 @@ public class LiteraturModulzuweisen extends JFrame {
 				LMz.setVisible(true);
 			}
 		});
-		mntmLiteraturZuModul.setIcon(new ImageIcon(ModulErfassen.class.getResource("/Bilder/study_small.png")));
+		mntmLiteraturZuModul.setIcon(new ImageIcon(LiteraturModulzuweisen.class.getResource("/Bilder/study_small.png")));
 		mnZuweisung.add(mntmLiteraturZuModul);
 		
 		JMenu mnAuswertung = new JMenu("Auswertung");
 		menuBar.add(mnAuswertung);
 		
-		JMenuItem mntmFlligeLiteraturbestellungen = new JMenuItem("F\u00E4llige Literaturbestellungen");
-		mntmFlligeLiteraturbestellungen.setSelectedIcon(new ImageIcon(PersonErfassen.class.getResource("/Bilder/books-stack.png")));
-		mntmFlligeLiteraturbestellungen.setIcon(null);
-		mnAuswertung.add(mntmFlligeLiteraturbestellungen);
+		JMenuItem mntmAuswertungLitBestellen = new JMenuItem("Auswertung zu bestellende Literatur");
+		mntmAuswertungLitBestellen.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				dispose();
+				AuswertungLitBestellen ALB = new AuswertungLitBestellen();
+				ALB.setVisible(true);
+			}
+		});
+		mntmAuswertungLitBestellen.setIcon(new ImageIcon(LiteraturModulzuweisen.class.getResource("/Bilder/schedule_small.png")));
+		mnAuswertung.add(mntmAuswertungLitBestellen);
+		
+		JMenu menu = new JMenu("Help");
+		menu.setIcon(new ImageIcon(LiteraturModulzuweisen.class.getResource("/Bilder/question-mark_small.png")));
+		menuBar.add(menu);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);

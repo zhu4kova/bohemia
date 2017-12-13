@@ -33,10 +33,11 @@ public class LiteraturErfassen extends JFrame {
 	private JComboBox<?> jahr;
 
 	private JPanel contentPane;
+	private JTextField litTitel;
 
 	/**
 	 * Launch the application.
-	 */
+	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -48,7 +49,7 @@ public class LiteraturErfassen extends JFrame {
 				}
 			}
 		});
-	}
+	} */
 
 	/**
 	 * Create the frame.
@@ -139,12 +140,16 @@ public class LiteraturErfassen extends JFrame {
 		
 		JMenuItem mntmFlligeLiteraturbestellungen = new JMenuItem("F\u00E4llige Literaturbestellungen");
 		mntmFlligeLiteraturbestellungen.setSelectedIcon(new ImageIcon(PersonErfassen.class.getResource("/Bilder/books-stack.png")));
-		mntmFlligeLiteraturbestellungen.setIcon(null);
+		mntmFlligeLiteraturbestellungen.setIcon(new ImageIcon(LiteraturErfassen.class.getResource("/Bilder/schedule_small.png")));
 		mnAuswertung.add(mntmFlligeLiteraturbestellungen);
+		
+		JMenu menu = new JMenu("Help");
+		menu.setIcon(new ImageIcon(LiteraturErfassen.class.getResource("/Bilder/question-mark_small.png")));
+		menuBar.add(menu);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
-		contentPane.setLayout(new MigLayout("", "[][200,grow][][]", "[][][][][][][][][]"));
+		contentPane.setLayout(new MigLayout("", "[][200,grow][31.00][]", "[][][][][][][][][][]"));
 
 		
 		/*
@@ -172,34 +177,41 @@ public class LiteraturErfassen extends JFrame {
 		/*
 		 * Feld fuer die ISBN
 		 */
+		
+		JLabel lblLitTitel = new JLabel("Titel *");
+		contentPane.add(lblLitTitel, "cell 0 3,alignx left,growy");
+		
+		litTitel = new JTextField();
+		contentPane.add(litTitel, "cell 1 3,growx");
+		litTitel.setColumns(10);
 		JLabel lblISBN = new JLabel("ISBN");
-		contentPane.add(lblISBN, "cell 0 3");
+		contentPane.add(lblISBN, "cell 0 4");
 		
 		isbn = new JTextField();
 		isbn.setColumns(50);
 		isbn.setBackground(Color.WHITE);
-		contentPane.add(isbn, "cell 1 3 3 1,growx");
+		contentPane.add(isbn, "cell 1 4 3 1,growx");
 		
 		/*
 		 * Feld fuer den Autor
 		 */
 		JLabel lblAutor = new JLabel("Autor");
-		contentPane.add(lblAutor, "cell 0 4");
+		contentPane.add(lblAutor, "cell 0 5");
 			
 		autor = new JTextField();
 		autor.setColumns(50);
 		autor.setBackground(Color.WHITE);
-		contentPane.add(autor, "cell 1 4 3 1,growx,aligny center");
+		contentPane.add(autor, "cell 1 5 3 1,growx,aligny center");
 		
 		/*
 		 * Feld fuer den Herausgeber
 		 */
 		
 		JLabel lblHerausgeber = new JLabel("Herausgeber");
-		contentPane.add(lblHerausgeber, "cell 0 5,alignx trailing");
+		contentPane.add(lblHerausgeber, "cell 0 6,alignx trailing");
 		
 		herausgeber = new JTextField();
-		contentPane.add(herausgeber, "cell 1 5,growx,aligny center");
+		contentPane.add(herausgeber, "cell 1 6,growx,aligny center");
 		herausgeber.setColumns(10);
 		
 		/*
@@ -207,21 +219,21 @@ public class LiteraturErfassen extends JFrame {
 		 */
 		
 		JLabel lblAuflage = new JLabel("Auflage");
-		contentPane.add(lblAuflage, "cell 0 6");
+		contentPane.add(lblAuflage, "cell 0 7");
 		
 		auflage = new JTextField();
 		auflage.setColumns(50);
 		auflage.setBackground(Color.WHITE);
-		contentPane.add(auflage, "cell 1 6,growx,aligny center");
+		contentPane.add(auflage, "cell 1 7,growx,aligny center");
 		
 		/*
 		 * Dropdown Feld fuer Jahr
 		 */
 		JLabel lblJahr = new JLabel("Jahr");
-		contentPane.add(lblJahr, "cell 2 6,alignx center");
+		contentPane.add(lblJahr, "cell 2 7,alignx center");
 		
 		jahr = new JComboBox();
-		contentPane.add(jahr, "cell 3 6,growx,aligny center");
+		contentPane.add(jahr, "cell 3 7,growx,aligny center");
 		
 		/*
 		 * Speichern Button
@@ -253,8 +265,11 @@ public class LiteraturErfassen extends JFrame {
 				}
 			}
 		});
-		contentPane.add(btnSpeichern, "flowx,cell 1 8,alignx left,aligny center");
-		contentPane.add(btnAbbrechen, "cell 1 8,alignx right,aligny center");
+		contentPane.add(btnSpeichern, "flowx,cell 1 9,alignx left,aligny center");
+		contentPane.add(btnAbbrechen, "cell 1 9,alignx right,aligny center");
+		
+		JLabel label = new JLabel("* Mussfelder");
+		contentPane.add(label, "cell 2 9 2 1");
 	}
 	
 	/*

@@ -28,7 +28,7 @@ public class PersonModulzuweisen extends JFrame {
 
 	/**
 	 * Launch the application.
-	 */
+	 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -40,7 +40,7 @@ public class PersonModulzuweisen extends JFrame {
 				}
 			}
 		});
-	}
+	}*/
 
 	/**
 	 * Create the frame.
@@ -128,8 +128,12 @@ public class PersonModulzuweisen extends JFrame {
 		
 		JMenuItem mntmFlligeLiteraturbestellungen = new JMenuItem("F\u00E4llige Literaturbestellungen");
 		mntmFlligeLiteraturbestellungen.setSelectedIcon(new ImageIcon(PersonErfassen.class.getResource("/Bilder/books-stack.png")));
-		mntmFlligeLiteraturbestellungen.setIcon(null);
+		mntmFlligeLiteraturbestellungen.setIcon(new ImageIcon(PersonModulzuweisen.class.getResource("/Bilder/schedule_small.png")));
 		mnAuswertung.add(mntmFlligeLiteraturbestellungen);
+		
+		JMenu menu = new JMenu("Help");
+		menu.setIcon(new ImageIcon(PersonModulzuweisen.class.getResource("/Bilder/question-mark_small.png")));
+		menuBar.add(menu);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
