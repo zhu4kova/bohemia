@@ -1,6 +1,6 @@
-import java.awt.BorderLayout;
+
 import java.awt.Color;
-import java.awt.EventQueue;
+import java.awt.Desktop;
 import java.awt.Font;
 
 import javax.swing.JFrame;
@@ -10,9 +10,13 @@ import javax.swing.border.EmptyBorder;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.Statement;
+import java.io.File;
+import java.io.IOException;
+import java.sql.*;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.HashMap;
 
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JButton;
@@ -26,37 +30,21 @@ import javax.swing.ImageIcon;
 import javax.swing.JSeparator;
 
 public class PersonErfassen extends JFrame {
-	
+
 	private JTextField id;
 	private JTextField nachname;
 	private JTextField vorname;
 	private JTextField adresse;
 	private JTextField plz;
 	private JTextField ort;
-	private JComboBox<?> land;
+	
+	private JComboBox land;
+
 
 	private JPanel contentPane;
-
-
-	/**
-	 * Launch the application.
-
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					PersonErfassen frame = new PersonErfassen();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-	 */
-
 	/**
 	 * Create the frame.
+	 * @throws SQLException 
 	 */
 	public PersonErfassen() {
 		setName("PersonErfassen");
@@ -142,18 +130,38 @@ public class PersonErfassen extends JFrame {
 		JMenu mnAuswertung = new JMenu("Auswertung");
 		menuBar.add(mnAuswertung);
 		
-		JMenuItem mntmFlligeLiteraturbestellungen = new JMenuItem("F\u00E4llige Literaturbestellungen");
-		mntmFlligeLiteraturbestellungen.setSelectedIcon(new ImageIcon(PersonErfassen.class.getResource("/Bilder/books-stack.png")));
-		mntmFlligeLiteraturbestellungen.setIcon(new ImageIcon(PersonErfassen.class.getResource("/Bilder/schedule_small.png")));
-		mnAuswertung.add(mntmFlligeLiteraturbestellungen);
+		JMenuItem mntmAuswertungLitBestellen = new JMenuItem("F\u00E4llige Literaturbestellungen");
+		mntmAuswertungLitBestellen.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				dispose();
+				AuswertungLitBestellen lBs = new AuswertungLitBestellen();
+				lBs.setVisible(true);
+			}
+		});
+		mntmAuswertungLitBestellen.setSelectedIcon(new ImageIcon(PersonErfassen.class.getResource("/Bilder/books-stack.png")));
+		mntmAuswertungLitBestellen.setIcon(new ImageIcon(PersonErfassen.class.getResource("/Bilder/schedule_small.png")));
+		mnAuswertung.add(mntmAuswertungLitBestellen);
 		
-		JMenu mnHelp = new JMenu("Help");
-		mnHelp.setIcon(new ImageIcon(PersonErfassen.class.getResource("/Bilder/question-mark_small.png")));
-		menuBar.add(mnHelp);
+		JMenuItem mntmHelp = new JMenuItem("Help");
+		mntmHelp.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (Desktop.isDesktopSupported()) {
+		            try {
+		            	ClassLoader classLoader = getClass().getClassLoader();
+		            	File myFile = new File(classLoader.getResource("PA_5_kickoff_ZH_alles_2017_V02.pdf").getFile());
+		                Desktop.getDesktop().open(myFile);
+		            } catch (IOException ex) {
+		                // no application registered for PDFs
+		            }
+		        }
+			}
+		});
+		mntmHelp.setIcon(new ImageIcon(PersonErfassen.class.getResource("/Bilder/question-mark_small.png")));
+		menuBar.add(mntmHelp);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
-		contentPane.setLayout(new MigLayout("", "[][200,grow][][]", "[][][][][][][][][]"));
+		contentPane.setLayout(new MigLayout("", "[][200,grow][][]", "[][][][][][][][][][]"));
 		/*
 		 * Titel der Seite
 		 */		
@@ -200,7 +208,7 @@ public class PersonErfassen extends JFrame {
 		/*
 		 * Eingabe für Adresse
 		 */
-		JLabel lblAdresse = new JLabel("Adresse");
+		JLabel lblAdresse = new JLabel("Adresse*");
 		contentPane.add(lblAdresse, "cell 0 4");
 		
 		adresse = new JTextField();
@@ -211,7 +219,7 @@ public class PersonErfassen extends JFrame {
 		/*
 		 * Eingabe für PLZ
 		 */
-		JLabel lblPlz = new JLabel("PLZ");
+		JLabel lblPlz = new JLabel("PLZ*");
 		contentPane.add(lblPlz, "cell 0 5");
 		
 		plz = new JTextField();
@@ -223,7 +231,7 @@ public class PersonErfassen extends JFrame {
 		/*
 		 * Eingabe für Ort
 		 */
-		JLabel lblOrt = new JLabel("Ort");
+		JLabel lblOrt = new JLabel("Ort*");
 		contentPane.add(lblOrt, "cell 2 5");
 		
 		ort = new JTextField();
@@ -235,11 +243,17 @@ public class PersonErfassen extends JFrame {
 		/*
 		 * Eingabe für Land aus Liste
 		 */
-		JLabel lblLand = new JLabel("Land");
-		contentPane.add(lblLand, "cell 0 6");
 		
-		JComboBox<?> land = new JComboBox();
-		contentPane.add(land, "cell 1 6,growx,aligny center");
+		JLabel lblLand = new JLabel("Land*");
+		contentPane.add(lblLand, "cell 0 6,alignx left");
+		
+		land = new JComboBox();
+		contentPane.add(land, "cell 1 6,growx");
+		contentPane.add(land, "flowx,cell 1 6,alignx left,aligny center");
+		fillComboBox();
+		
+		
+
 		
 		/*
 		 * Speichern Button
@@ -254,13 +268,9 @@ public class PersonErfassen extends JFrame {
 				}
 			}
 		});
-		contentPane.add(btnSpeichern, "flowx,cell 1 8,alignx left,aligny center");
-		
-		/*
-		 * Speichern und Module zuordnen Button
-		 */
-		JButton btnSpeichernUndModule = new JButton("Speichern und Module zuweisen");
-		contentPane.add(btnSpeichernUndModule, "cell 1 9,alignx left,aligny center");
+		contentPane.add(btnSpeichern, "cell 1 8");
+
+
 		
 		/*
 		 * Abbrechen Button
@@ -274,19 +284,12 @@ public class PersonErfassen extends JFrame {
 				dispose();
 			}
 		});
-		contentPane.add(btnAbbrechen, "flowx,cell 1 8,alignx right,aligny center");
+		
+		contentPane.add(btnAbbrechen, "cell 1 8,alignx right,aligny center");
 		
 		JLabel lblMussfelder = new JLabel("* Mussfelder");
 		contentPane.add(lblMussfelder, "cell 3 9");
-	}
-
-	public JComboBox<?> getLand() {
-		return land;
-	}
-
-	public void setLand(JComboBox<?> land) {
-		this.land = land;
-	}
+		    }
 	
 
 	/*
@@ -304,17 +307,25 @@ public class PersonErfassen extends JFrame {
 			String adresse_ = adresse.getText();
 			String plz_ = plz.getText();
 			String ort_ = ort.getText();
+			String land_ = (String) land.getSelectedItem();
 		
 		// Verbindung mit Datenbank herstellen
-			String url = "jdbc:mysql://localhost:3306/bohemia?autoReconnect=true&useSSL=false"; // evtl. anpassen gem. DB-Konfiguration
-	        String username = "root"; // DB-Benutzername
-	        String password = ""; // DB-Passwort	         
+			String url = "jdbc:mysql://bohemia.mysql.database.azure.com:3306/bohemia?autoReconnect=true&useSSL=false"; 
+	        String username = "myadmin@bohemia"; // DB-Benutzername
+	        String password = "Bohemia2017"; // DB-Passwort	          
 	        
 	        // Überprüfe, ob DB Benutzername und Passwort mitgegeben werden! 
 	        	if (username == "" || password == "") {
 	        		JOptionPane.showMessageDialog(null, "DB username or password is missing!");
 	        		return;
 	        	}
+	        	
+	        // Überprüfe, ob die Mussfelder ausgefüllt wurden
+	        	if (nachname.getText().equals("") || vorname.getText().equals("") || adresse.getText().equals("") || plz.getText().equals("") || ort.getText().equals("")){
+	        		JOptionPane.showMessageDialog(null, "Modul konnten nicht gespeichert werdem. Bitte alle Mussfelder ausfüllen.");
+	        		return;
+	        	}
+	        	
 
 	        try (Connection connection = DriverManager.getConnection(url, username, password)) {
 	        	//Erstelle neues Statement
@@ -322,7 +333,14 @@ public class PersonErfassen extends JFrame {
 	        	
 	        	// Aufbau SQL-Befehl
 		        	try { 
-		        		st.executeUpdate("INSERT INTO student  " + "VALUES (10, '"+nachname_+"', '"+ vorname_+"', '"+ adresse_+"', '" + plz_ + "', '"+ ort_+ "', 1" + ")");
+		        		st.executeUpdate("INSERT INTO bohemia.student (nachname,vorname,adresse,plz,ort,land_id) VALUES ('"+nachname_+"', '"+vorname_+"', '"+ adresse_+"', '" +plz_+"', '"+ort_+"','"+land_+"')");
+		        		JOptionPane.showMessageDialog(null, nachname_ + " " + vorname_ + " wurde erfolgreich erfasst.");
+		        		id.setText("");
+		        		nachname.setText("");
+		        		vorname.setText("");
+		        		adresse.setText("");
+		        		plz.setText("");
+		        		ort.setText("");
 		        	}
 		        	catch (SQLException e) {
 		        		String error = e.getLocalizedMessage();
@@ -332,6 +350,35 @@ public class PersonErfassen extends JFrame {
 	        } catch (SQLException e) {
 	        	JOptionPane.showMessageDialog(null, "Cannot connect to DB!");
 	        }
+	}
+	
+	public void fillComboBox() {
+		// Verbindung mit Datenbank herstellen
+					String url = "jdbc:mysql://bohemia.mysql.database.azure.com:3306/bohemia?autoReconnect=true&useSSL=false"; 
+			        String username = "myadmin@bohemia"; // DB-Benutzername
+			        String password = "Bohemia2017"; // DB-Passwort	          
+			        
+	   // Überprüfe, ob DB Benutzername und Passwort mitgegeben werden! 
+			        if (username == "" || password == "") {
+			        	JOptionPane.showMessageDialog(null, "DB username or password is missing!");
+			        	return;
+			        }
+		
+				try {
+					Connection connection = DriverManager.getConnection(url, username, password);
+					String query="SELECT * FROM bohemia.land order by id asc";
+					PreparedStatement pst = connection.prepareStatement(query);
+					ResultSet rs = pst.executeQuery();
+					
+					while(rs.next()) {
+						land.addItem(rs.getString("id"));
+					}
+				}
+				catch (SQLException e) {
+					String error = e.getLocalizedMessage();
+	        		JOptionPane.showMessageDialog(null, error);
+				}
+			
 	}
 
 }

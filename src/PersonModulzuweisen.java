@@ -1,9 +1,17 @@
 import java.awt.BorderLayout;
+import java.awt.Desktop;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -13,34 +21,19 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 import net.miginfocom.swing.MigLayout;
 
 public class PersonModulzuweisen extends JFrame {
-	
-	private JTextField person;
 
 	private JPanel contentPane;
 
-	/**
-	 * Launch the application.
-	 
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					PersonModulzuweisen frame = new PersonModulzuweisen();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}*/
+	private JComboBox person;
+	private JComboBox modul;
 
 	/**
 	 * Create the frame.
@@ -126,18 +119,38 @@ public class PersonModulzuweisen extends JFrame {
 		JMenu mnAuswertung = new JMenu("Auswertung");
 		menuBar.add(mnAuswertung);
 		
-		JMenuItem mntmFlligeLiteraturbestellungen = new JMenuItem("F\u00E4llige Literaturbestellungen");
-		mntmFlligeLiteraturbestellungen.setSelectedIcon(new ImageIcon(PersonErfassen.class.getResource("/Bilder/books-stack.png")));
-		mntmFlligeLiteraturbestellungen.setIcon(new ImageIcon(PersonModulzuweisen.class.getResource("/Bilder/schedule_small.png")));
-		mnAuswertung.add(mntmFlligeLiteraturbestellungen);
+		JMenuItem mntmAuswertungLitBestellen = new JMenuItem("F\u00E4llige Literaturbestellungen");
+		mntmAuswertungLitBestellen.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				dispose();
+				AuswertungLitBestellen lBs = new AuswertungLitBestellen();
+				lBs.setVisible(true);
+			}
+		});
+		mntmAuswertungLitBestellen.setSelectedIcon(new ImageIcon(PersonErfassen.class.getResource("/Bilder/books-stack.png")));
+		mntmAuswertungLitBestellen.setIcon(new ImageIcon(PersonModulzuweisen.class.getResource("/Bilder/schedule_small.png")));
+		mnAuswertung.add(mntmAuswertungLitBestellen);
 		
-		JMenu menu = new JMenu("Help");
-		menu.setIcon(new ImageIcon(PersonModulzuweisen.class.getResource("/Bilder/question-mark_small.png")));
-		menuBar.add(menu);
+		JMenuItem mntmHelp = new JMenuItem("Help");
+		mntmHelp.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (Desktop.isDesktopSupported()) {
+		            try {
+		            	ClassLoader classLoader = getClass().getClassLoader();
+		            	File myFile = new File(classLoader.getResource("PA_5_kickoff_ZH_alles_2017_V02.pdf").getFile());
+		                Desktop.getDesktop().open(myFile);
+		            } catch (IOException ex) {
+		                // no application registered for PDFs
+		            }
+		        }
+			}
+		});
+		mntmHelp.setIcon(new ImageIcon(PersonModulzuweisen.class.getResource("/Bilder/question-mark_small.png")));
+		menuBar.add(mntmHelp);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
-		contentPane.setLayout(new MigLayout("", "[][200,grow][][]", "[][][][][][][][][]"));
+		contentPane.setLayout(new MigLayout("", "[][200,grow][][]", "[][][][][][][][][][]"));
 		
 		/*
 		 * Titel der Seite
@@ -152,12 +165,14 @@ public class PersonModulzuweisen extends JFrame {
 		 * Auswahl Feld für die Person
 		 */
 		JLabel lblPerson = new JLabel("Person");
-		contentPane.add(lblPerson, "cell 0 2,alignx left,aligny center");
+		contentPane.add(lblPerson, "cell 0 2,alignx trailing,aligny center");
 		
-		person = new JTextField();
-		person.setText("");
-		contentPane.add(person, "cell 1 2 2 1,growx,aligny center");
-		person.setColumns(10);
+		
+		person = new JComboBox();
+		contentPane.add(person, "cell 1 2,growx");
+		fillComboBoxPerson();
+		
+
 		
 		
 		/*
@@ -169,14 +184,17 @@ public class PersonModulzuweisen extends JFrame {
 			}
 		});
 		contentPane.add(btnModulZuweisen, "cell 3 2,growx,aligny center");
-		JLabel lblModul = new JLabel("Modul");
-		contentPane.add(lblModul, "cell 0 4,alignx left,aligny center");
+		
 		
 		/*
 		 * Auswahl Feld für das Modul
 		 */
-		JComboBox modul = new JComboBox();
-		contentPane.add(modul, "cell 1 4 2 1,growx");
+		JLabel lblModul = new JLabel("Modul");
+		contentPane.add(lblModul, "cell 0 4,alignx left,aligny center");
+		
+		modul = new JComboBox();
+		contentPane.add(modul, "cell 1 4,growx");
+		fillComboBoxModul();
 		
 		/*
 		 * Modul entfernen Button
@@ -208,6 +226,70 @@ public class PersonModulzuweisen extends JFrame {
 			}
 		});
 		contentPane.add(btnAbbrechen, "cell 1 9,alignx right,aligny center");
+	}
+	
+	public void fillComboBoxPerson() {
+		// Verbindung mit Datenbank herstellen
+					String url = "jdbc:mysql://bohemia.mysql.database.azure.com:3306/bohemia?autoReconnect=true&useSSL=false"; 
+			        String username = "myadmin@bohemia"; // DB-Benutzername
+			        String password = "Bohemia2017"; // DB-Passwort	          
+			        
+	   // Überprüfe, ob DB Benutzername und Passwort mitgegeben werden! 
+			        if (username == "" || password == "") {
+			        	JOptionPane.showMessageDialog(null, "DB username or password is missing!");
+			        	return;
+			        }
+		
+				try {
+					Connection connection = DriverManager.getConnection(url, username, password);
+					String query="SELECT * FROM bohemia.student order by nachname asc";
+					PreparedStatement pst = connection.prepareStatement(query);
+					ResultSet rs = pst.executeQuery();
+					
+					while(rs.next()) {
+						String temp = rs.getString("nachname");
+						temp += " ";
+						temp += rs.getString("vorname");
+						person.addItem(temp);
+					}
+				}
+				catch (SQLException e) {
+					String error = e.getLocalizedMessage();
+	        		JOptionPane.showMessageDialog(null, error);
+				}
+			
+	}
+	
+	public void fillComboBoxModul() {
+		// Verbindung mit Datenbank herstellen
+					String url = "jdbc:mysql://bohemia.mysql.database.azure.com:3306/bohemia?autoReconnect=true&useSSL=false"; 
+			        String username = "myadmin@bohemia"; // DB-Benutzername
+			        String password = "Bohemia2017"; // DB-Passwort	          
+			        
+	   // Überprüfe, ob DB Benutzername und Passwort mitgegeben werden! 
+			        if (username == "" || password == "") {
+			        	JOptionPane.showMessageDialog(null, "DB username or password is missing!");
+			        	return;
+			        }
+		
+				try {
+					Connection connection = DriverManager.getConnection(url, username, password);
+					String query="SELECT * FROM bohemia.modul order by modul asc";
+					PreparedStatement pst = connection.prepareStatement(query);
+					ResultSet rs = pst.executeQuery();
+					
+					while(rs.next()) {
+						String temp = rs.getString("kuerzel");
+						temp += " ";
+						temp += rs.getString("modul");
+						modul.addItem(temp);
+					}
+				}
+				catch (SQLException e) {
+					String error = e.getLocalizedMessage();
+	        		JOptionPane.showMessageDialog(null, error);
+				}
+			
 	}
 
 }

@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.awt.Desktop;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Toolkit;
@@ -12,14 +13,11 @@ import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
 import net.miginfocom.swing.MigLayout;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JMenu;
-import javax.swing.UIManager;
-import javax.swing.border.SoftBevelBorder;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.EmptyBorder;
-import javax.swing.JPanel;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
+
 
 public class Bohemia {
 
@@ -203,10 +201,24 @@ public class Bohemia {
 		frmBohemiaLiteraturverwaltung.getContentPane().add(btnAuswertungLitBestellen, "cell 2 3,grow");
 		
 		JLabel lblHelp = new JLabel(" ");
+		lblHelp.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				if (Desktop.isDesktopSupported()) {
+		            try {
+		            	ClassLoader classLoader = getClass().getClassLoader();
+		            	File myFile = new File(classLoader.getResource("PA_5_kickoff_ZH_alles_2017_V02.pdf").getFile());
+		                Desktop.getDesktop().open(myFile);
+		            } catch (IOException ex) {
+		                // no application registered for PDFs
+		            }
+		        }
+			}
+		});
 		lblHelp.setIconTextGap(15);
 		lblHelp.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblHelp.setIcon(new ImageIcon(Bohemia.class.getResource("/Bilder/question-mark.png")));
-		frmBohemiaLiteraturverwaltung.getContentPane().add(lblHelp, "cell 2 0,grow");
+		frmBohemiaLiteraturverwaltung.getContentPane().add(lblHelp, "cell 2 0,alignx right,growy");
 		
 	}
 

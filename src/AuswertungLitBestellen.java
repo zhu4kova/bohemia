@@ -1,10 +1,13 @@
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -16,11 +19,11 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JSeparator;
-import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 import net.miginfocom.swing.MigLayout;
+import net.proteanit.sql.DbUtils;
+
 import javax.swing.SwingConstants;
 import javax.swing.JTable;
 import javax.swing.JScrollPane;
@@ -122,9 +125,22 @@ public class AuswertungLitBestellen extends JFrame {
 		mntmFlligeLiteraturbestellungen.setIcon(new ImageIcon(AuswertungLitBestellen.class.getResource("/Bilder/schedule_small.png")));
 		mnAuswertung.add(mntmFlligeLiteraturbestellungen);
 		
-		JMenu menu = new JMenu("Help");
-		menu.setIcon(new ImageIcon(AuswertungLitBestellen.class.getResource("/Bilder/question-mark_small.png")));
-		menuBar.add(menu);
+		JMenuItem mntmHelp = new JMenuItem("Help");
+		mntmHelp.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (Desktop.isDesktopSupported()) {
+		            try {
+		            	ClassLoader classLoader = getClass().getClassLoader();
+		            	File myFile = new File(classLoader.getResource("PA_5_kickoff_ZH_alles_2017_V02.pdf").getFile());
+		                Desktop.getDesktop().open(myFile);
+		            } catch (IOException ex) {
+		                // no application registered for PDFs
+		            }
+		        }
+			}
+		});
+		mntmHelp.setIcon(new ImageIcon(AuswertungLitBestellen.class.getResource("/Bilder/question-mark_small.png")));
+		menuBar.add(mntmHelp);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -156,18 +172,25 @@ public class AuswertungLitBestellen extends JFrame {
 		});
 		
 		JButton btnAuswertungLaden = new JButton("Auswertung laden");
+		btnAuswertungLaden.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				fillTable();
+			}
+		});
 		btnAuswertungLaden.setFocusPainted(false);
 		btnAuswertungLaden.setToolTipText("Klicken Sie hier um eine Liste mit der zu bestellenden Literatur zu erstellen.");
 		btnAuswertungLaden.setHorizontalAlignment(SwingConstants.LEFT);
 		btnAuswertungLaden.setIconTextGap(10);
 		btnAuswertungLaden.setIcon(new ImageIcon(AuswertungLitBestellen.class.getResource("/Bilder/download.png")));
 		contentPane.add(btnAuswertungLaden, "cell 1 1,alignx left");
+
 		
 		JScrollPane scrollPane = new JScrollPane();
 		contentPane.add(scrollPane, "cell 1 2,grow");
 		
 		table = new JTable();
 		scrollPane.setViewportView(table);
+		
 		
 		JButton btnExportBestellen = new JButton("Exportieren und Bestellen");
 		btnExportBestellen.addActionListener(new ActionListener() {
@@ -182,6 +205,33 @@ public class AuswertungLitBestellen extends JFrame {
 		});
 		contentPane.add(btnExportBestellen, "flowx,cell 1 3");
 		contentPane.add(btnZurueck, "cell 1 3,alignx right,aligny center");
+	}
+	
+	public void fillTable() {
+		// Verbindung mit Datenbank herstellen
+					String url = "jdbc:mysql://bohemia.mysql.database.azure.com:3306/bohemia?autoReconnect=true&useSSL=false"; 
+			        String username = "myadmin@bohemia"; // DB-Benutzername
+			        String password = "Bohemia2017"; // DB-Passwort	          
+			        
+	   // Überprüfe, ob DB Benutzername und Passwort mitgegeben werden! 
+			        if (username == "" || password == "") {
+			        	JOptionPane.showMessageDialog(null, "DB username or password is missing!");
+			        	return;
+			        }
+		
+				try {
+					Connection connection = DriverManager.getConnection(url, username, password);
+					String query="SELECT * FROM bohemia.modul order by modul asc";
+					PreparedStatement pst = connection.prepareStatement(query);
+					ResultSet rs = pst.executeQuery();
+					table.setModel(DbUtils.resultSetToTableModel(rs));
+					
+				}
+				catch (SQLException e) {
+					String error = e.getLocalizedMessage();
+	        		JOptionPane.showMessageDialog(null, error);
+				}
+			
 	}
 
 }

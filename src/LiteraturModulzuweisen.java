@@ -1,9 +1,15 @@
-import java.awt.BorderLayout;
-import java.awt.EventQueue;
+import java.awt.Desktop;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -13,16 +19,17 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JSeparator;
-import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 import net.miginfocom.swing.MigLayout;
 
 public class LiteraturModulzuweisen extends JFrame {
 	
-	private JTextField modul;
+	private JComboBox modul;
+	private JComboBox literatur;
+	
 
 	private JPanel contentPane;
 
@@ -129,20 +136,33 @@ public class LiteraturModulzuweisen extends JFrame {
 		mntmAuswertungLitBestellen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				dispose();
-				AuswertungLitBestellen ALB = new AuswertungLitBestellen();
-				ALB.setVisible(true);
+				AuswertungLitBestellen lBs = new AuswertungLitBestellen();
+				lBs.setVisible(true);
 			}
 		});
 		mntmAuswertungLitBestellen.setIcon(new ImageIcon(LiteraturModulzuweisen.class.getResource("/Bilder/schedule_small.png")));
 		mnAuswertung.add(mntmAuswertungLitBestellen);
 		
-		JMenu menu = new JMenu("Help");
-		menu.setIcon(new ImageIcon(LiteraturModulzuweisen.class.getResource("/Bilder/question-mark_small.png")));
-		menuBar.add(menu);
+		JMenuItem mntmHelp = new JMenuItem("Help");
+		mntmHelp.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (Desktop.isDesktopSupported()) {
+		            try {
+		            	ClassLoader classLoader = getClass().getClassLoader();
+		            	File myFile = new File(classLoader.getResource("PA_5_kickoff_ZH_alles_2017_V02.pdf").getFile());
+		                Desktop.getDesktop().open(myFile);
+		            } catch (IOException ex) {
+		                // no application registered for PDFs
+		            }
+		        }
+			}
+		});
+		mntmHelp.setIcon(new ImageIcon(LiteraturModulzuweisen.class.getResource("/Bilder/question-mark_small.png")));
+		menuBar.add(mntmHelp);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
-		contentPane.setLayout(new MigLayout("", "[][200,grow][][]", "[][][][][][][][][]"));
+		contentPane.setLayout(new MigLayout("", "[][200,grow][][]", "[][][][][][][][][][][]"));
 		
 		/*
 		 * Titel der Seite
@@ -159,10 +179,9 @@ public class LiteraturModulzuweisen extends JFrame {
 		JLabel lblModul = new JLabel("Modul");
 		contentPane.add(lblModul, "cell 0 2,alignx left,aligny center");
 		
-		modul = new JTextField();
-		modul.setText("");
-		contentPane.add(modul, "cell 1 2 2 1,growx,aligny center");
-		modul.setColumns(10);
+		modul = new JComboBox();
+		contentPane.add(modul, "cell 1 2,growx,aligny center");
+		fillComboBoxModul();
 		
 		
 		/*
@@ -173,31 +192,40 @@ public class LiteraturModulzuweisen extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 			}
 		});
+		
+		
+
 		contentPane.add(btnLiteraturhinzufuegen, "cell 3 2,growx,aligny center");
 		
+		
+	
+
 		
 		/*
 		 * Feld für die Literaturauswahl aus bestehenden DB Eintraegen -> max. 4
 		 */
-		JLabel lblLiteratur = new JLabel("Literatur");
-		contentPane.add(lblLiteratur, "cell 0 4,alignx left,aligny center");
 		
-		JComboBox literaturzuweisen = new JComboBox();
-		contentPane.add(literaturzuweisen, "cell 1 4 2 1,growx");
+		JLabel lblLiteratur = new JLabel("Literatur");
+		contentPane.add(lblLiteratur, "cell 0 5,alignx left,aligny center");
+		
+		literatur = new JComboBox();
+		contentPane.add(literatur, "cell 1 5,growx");
+		fillComboBoxLiteratur();
+		
 		
 		
 		/*
 		 * Literaturauwahl entfernen Button
 		 */
 		JButton btnMinus = new JButton("-");
-		contentPane.add(btnMinus, "cell 3 4");
+		contentPane.add(btnMinus, "cell 3 5");
 		
 		/*
 		 * Speichern Button
 		 */
 		
 		JButton btnSpeichern = new JButton("Speichern");
-		contentPane.add(btnSpeichern, "flowx,cell 1 9,alignx left,aligny center");
+		contentPane.add(btnSpeichern, "flowx,cell 1 10,alignx left,aligny center");
 		
 		/*
 		 * Abbrechen Button
@@ -211,8 +239,72 @@ public class LiteraturModulzuweisen extends JFrame {
 				dispose();
 			}
 		});
-		contentPane.add(btnAbbrechen, "cell 1 9,alignx right,aligny center");
+		contentPane.add(btnAbbrechen, "cell 1 10,alignx right,aligny center");
 		
+	}
+	
+	public void fillComboBoxLiteratur() {
+		// Verbindung mit Datenbank herstellen
+					String url = "jdbc:mysql://bohemia.mysql.database.azure.com:3306/bohemia?autoReconnect=true&useSSL=false"; 
+			        String username = "myadmin@bohemia"; // DB-Benutzername
+			        String password = "Bohemia2017"; // DB-Passwort	          
+			        
+	   // Überprüfe, ob DB Benutzername und Passwort mitgegeben werden! 
+			        if (username == "" || password == "") {
+			        	JOptionPane.showMessageDialog(null, "DB username or password is missing!");
+			        	return;
+			        }
+		
+				try {
+					Connection connection = DriverManager.getConnection(url, username, password);
+					String query="SELECT * FROM bohemia.literatur order by titel asc";
+					PreparedStatement pst = connection.prepareStatement(query);
+					ResultSet rs = pst.executeQuery();
+					
+					while(rs.next()) {
+						String temp = rs.getString("titel");
+						temp += " von ";
+						temp += rs.getString("autor");
+						literatur.addItem(temp);
+					}
+				}
+				catch (SQLException e) {
+					String error = e.getLocalizedMessage();
+	        		JOptionPane.showMessageDialog(null, error);
+				}
+			
+	}
+	
+	public void fillComboBoxModul() {
+		// Verbindung mit Datenbank herstellen
+					String url = "jdbc:mysql://bohemia.mysql.database.azure.com:3306/bohemia?autoReconnect=true&useSSL=false"; 
+			        String username = "myadmin@bohemia"; // DB-Benutzername
+			        String password = "Bohemia2017"; // DB-Passwort	          
+			        
+	   // Überprüfe, ob DB Benutzername und Passwort mitgegeben werden! 
+			        if (username == "" || password == "") {
+			        	JOptionPane.showMessageDialog(null, "DB username or password is missing!");
+			        	return;
+			        }
+		
+				try {
+					Connection connection = DriverManager.getConnection(url, username, password);
+					String query="SELECT * FROM bohemia.modul order by modul asc";
+					PreparedStatement pst = connection.prepareStatement(query);
+					ResultSet rs = pst.executeQuery();
+					
+					while(rs.next()) {
+						String temp = rs.getString("kuerzel");
+						temp += " ";
+						temp += rs.getString("modul");
+						modul.addItem(temp);
+					}
+				}
+				catch (SQLException e) {
+					String error = e.getLocalizedMessage();
+	        		JOptionPane.showMessageDialog(null, error);
+				}
+			
 	}
 
 }

@@ -1,16 +1,19 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.Statement;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -29,28 +32,12 @@ import net.miginfocom.swing.MigLayout;
 
 public class ModulErfassen extends JFrame {
 	
+	protected static final int INFORMATION_MESSAGE = 0;
 	private JTextField id;
 	private JTextField kuerzel;
 	private JTextField bezeichnung;
 
 	private JPanel contentPane;
-
-
-	/**
-	 * Launch the application.
-	
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					ModulErfassen frame = new ModulErfassen();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	} */
 
 	/**
 	 * Create the frame.
@@ -128,8 +115,8 @@ public class ModulErfassen extends JFrame {
 	mntmLiteraturZuModul.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent arg0) {
 			dispose();
-			LiteraturModulzuweisen LMz = new LiteraturModulzuweisen();
-			LMz.setVisible(true);
+			LiteraturModulzuweisen lMz = new LiteraturModulzuweisen();
+			lMz.setVisible(true);
 		}
 	});
 	mntmLiteraturZuModul.setIcon(new ImageIcon(ModulErfassen.class.getResource("/Bilder/study_small.png")));
@@ -138,14 +125,37 @@ public class ModulErfassen extends JFrame {
 	JMenu mnAuswertung = new JMenu("Auswertung");
 	menuBar.add(mnAuswertung);
 	
-	JMenuItem mntmFlligeLiteraturbestellungen = new JMenuItem("F\u00E4llige Literaturbestellungen");
-	mntmFlligeLiteraturbestellungen.setSelectedIcon(new ImageIcon(PersonErfassen.class.getResource("/Bilder/books-stack.png")));
-	mntmFlligeLiteraturbestellungen.setIcon(new ImageIcon(ModulErfassen.class.getResource("/Bilder/schedule_small.png")));
-	mnAuswertung.add(mntmFlligeLiteraturbestellungen);
+	JMenuItem mntmAuswertungLitBestellen = new JMenuItem("F\u00E4llige Literaturbestellungen");
+	mntmAuswertungLitBestellen.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent arg0) {
+			dispose();
+			AuswertungLitBestellen lBs = new AuswertungLitBestellen();
+			lBs.setVisible(true);
+		}
+	});
+	mntmAuswertungLitBestellen.setSelectedIcon(new ImageIcon(PersonErfassen.class.getResource("/Bilder/books-stack.png")));
+	mntmAuswertungLitBestellen.setIcon(new ImageIcon(ModulErfassen.class.getResource("/Bilder/schedule_small.png")));
+	mnAuswertung.add(mntmAuswertungLitBestellen);
 	
-	JMenu menu = new JMenu("Help");
-	menu.setIcon(new ImageIcon(ModulErfassen.class.getResource("/Bilder/question-mark_small.png")));
-	menuBar.add(menu);
+	JMenuItem mntmHelp = new JMenuItem("Help");
+	mntmHelp.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent arg0) {
+			if (Desktop.isDesktopSupported()) {
+	            try {
+	            	ClassLoader classLoader = getClass().getClassLoader();
+	            	File myFile = new File(classLoader.getResource("PA_5_kickoff_ZH_alles_2017_V02.pdf").getFile());
+	                Desktop.getDesktop().open(myFile);
+	            } catch (IOException ex) {
+	                // no application registered for PDFs
+	            }
+	        }
+		}
+	});
+	mntmHelp.setIcon(new ImageIcon(ModulErfassen.class.getResource("/Bilder/question-mark_small.png")));
+	menuBar.add(mntmHelp);
+	
+	
+	
 	contentPane = new JPanel();
 	contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 	setContentPane(contentPane);
@@ -210,6 +220,11 @@ public class ModulErfassen extends JFrame {
 		}
 	});
 	
+	
+	/*
+	 * Modulliste aus dem Internet im Standardbrowser aufrufen
+	 */
+	
 	JButton btnModullisteOnlineAbrufen = new JButton("Modulliste online abrufen");
 	btnModullisteOnlineAbrufen.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent arg0) {
@@ -255,38 +270,45 @@ public class ModulErfassen extends JFrame {
 	private void addModulToDb () throws SQLException  {
 		
 		// Daten auslesen
-			String id_ = id.getText();
 			String kuerzel_ = kuerzel.getText();
 			String bezeichnung_ = bezeichnung.getText();
 		
-		// Verbindung mit Datenbank herstellen
-			String url = "jdbc:mysql://localhost:3306/bohemia?autoReconnect=true&useSSL=false"; // evtl. anpassen gem. DB-Konfiguration
-	        String username = "root"; // DB-Benutzername
-	        String password = "sivasli58"; // DB-Passwort	         
+		// Verbindung mit Datenbank herstellen (online)
+			String url = "jdbc:mysql://bohemia.mysql.database.azure.com:3306/bohemia?autoReconnect=true&useSSL=false"; 
+	        String username = "myadmin@bohemia"; // DB-Benutzername
+	        String password = "Bohemia2017"; // DB-Passwort	         
 	        
 	        // Überprüfe, ob DB Benutzername und Passwort mitgegeben werden! 
 	        	if (username == "" || password == "") {
 	        		JOptionPane.showMessageDialog(null, "DB username or password is missing!");
 	        		return;
 	        	}
-	        	JOptionPane.showMessageDialog(null, "1");
-	        try (Connection connection = DriverManager.getConnection(url, username, password)) {
-	        	JOptionPane.showMessageDialog(null, "2");
-	        	//Erstelle neues Statement
-	        	Statement st = connection.createStatement();
-	        	JOptionPane.showMessageDialog(null, "3");
-	        	// Aufbau SQL-Befehl
-		        	try { 
-		        		st.executeUpdate("INSERT INTO modul  " + "VALUES (8, '"+ kuerzel_ +"', '"+ bezeichnung_ + "')");
-		        		JOptionPane.showMessageDialog(null, "4");
-		        	}
-		        	catch (SQLException e) {
-		        		String error = e.getLocalizedMessage();
-		        		JOptionPane.showMessageDialog(null, error);
-		        	}
 	        	
-	        } catch (SQLException e) {
-	        	JOptionPane.showMessageDialog(null, "Cannot connect to DB!");
-	        }
+	        // Überprüfe, ob die Mussfelder ausgefüllt wurden
+	        	if (kuerzel.getText().equals("") || bezeichnung.getText().equals("")){
+	        		JOptionPane.showMessageDialog(null, "Modul konnten nicht gespeichert werdem. Bitte alle Mussfelder ausfüllen.");
+	        		return;
+	        	}
+	        	
+	        	try (Connection connection = DriverManager.getConnection(url, username, password)) {
+	        		//Erstelle neues Statement
+	        		Statement st = connection.createStatement();
+	        		// Aufbau SQL-Befehl
+		        		try { 
+		        			st.executeUpdate("INSERT INTO modul (kuerzel, modul) VALUES ('"+ kuerzel_ +"', '"+ bezeichnung_ + "')");
+		        			JOptionPane.showMessageDialog(null, "Modul: " + bezeichnung_ + " wurde erfolgreich erfasst.");
+		        			kuerzel.setText("");
+		        			bezeichnung.setText("");
+		        		}
+		        		catch (SQLException e) {
+		        			String error = e.getLocalizedMessage();
+		        			JOptionPane.showMessageDialog(null, error);
+		        		}
+	        	
+	        	}
+	        
+	        	catch (SQLException e) {
+	        		JOptionPane.showMessageDialog(null, "Cannot connect to DB!");
+	        	}
 	}
 }
