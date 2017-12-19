@@ -1,4 +1,5 @@
 
+
 import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.Font;
@@ -7,6 +8,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,7 +18,6 @@ import java.sql.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.HashMap;
 
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JButton;
@@ -40,12 +41,19 @@ public class PersonErfassen extends JFrame {
 	
 	private JComboBox land;
 
+	/*
+	 * Erstelle das GUI Panel für die Erfassung einer Person.
+	 * @author Anna Zhuchkova
+	 * @version 1.0
+	 * @param 
+	 * @return
+	 */
 
 	private JPanel contentPane;
 	/**
 	 * Create the frame.
-	 * @throws SQLException 
 	 */
+	
 	public PersonErfassen() {
 		setName("PersonErfassen");
 		setIconImage(Toolkit.getDefaultToolkit().getImage(PersonErfassen.class.getResource("/Bilder/FFHS_logo.png")));
@@ -54,7 +62,11 @@ public class PersonErfassen extends JFrame {
 		setBounds(100, 100, 712, 450);
 		
 		/*
-		 * Menue Bar mit Verlinkungen zu anderen Menuepunkten
+		 * Erstelle das GUI Menü und blende die Auwahl des aktuellen Panels aus.
+		 * @author Christian Mächler
+		 * @version 1.0
+		 * @param 
+		 * @return
 		 */
 		
 		JMenuBar menuBar = new JMenuBar();
@@ -162,6 +174,8 @@ public class PersonErfassen extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(new MigLayout("", "[][200,grow][][]", "[][][][][][][][][][]"));
+		
+		
 		/*
 		 * Titel der Seite
 		 */		
@@ -287,6 +301,10 @@ public class PersonErfassen extends JFrame {
 		
 		contentPane.add(btnAbbrechen, "cell 1 8,alignx right,aligny center");
 		
+		/*
+		 * Markierung der Mussfelder
+		 */
+		
 		JLabel lblMussfelder = new JLabel("* Mussfelder");
 		contentPane.add(lblMussfelder, "cell 3 9");
 		    }
@@ -348,9 +366,17 @@ public class PersonErfassen extends JFrame {
 		        	}
 	        	
 	        } catch (SQLException e) {
-	        	JOptionPane.showMessageDialog(null, "Cannot connect to DB!");
+	        	JOptionPane.showMessageDialog(null, "Verbindung zur Datenbank ist fehlgeschlagen!");
 	        }
 	}
+	
+	/*
+	 * Füge die die Länder aus der Datenbank in das Dropdown hinzu. 
+	 * @author Anna Zhuchkova
+	 * @version 1.0
+	 * @param 
+	 * @return
+	 */
 	
 	public void fillComboBox() {
 		// Verbindung mit Datenbank herstellen
@@ -360,10 +386,10 @@ public class PersonErfassen extends JFrame {
 			        
 	   // Überprüfe, ob DB Benutzername und Passwort mitgegeben werden! 
 			        if (username == "" || password == "") {
-			        	JOptionPane.showMessageDialog(null, "DB username or password is missing!");
+			        	JOptionPane.showMessageDialog(null, "DB Benutzername oder Passwort fehlt!");
 			        	return;
 			        }
-		
+		// Führe die SQL Anfrage aus und füll das Dropdown land ab
 				try {
 					Connection connection = DriverManager.getConnection(url, username, password);
 					String query="SELECT * FROM bohemia.land order by id asc";

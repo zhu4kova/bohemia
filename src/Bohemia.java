@@ -221,10 +221,4 @@ public class Bohemia {
 		frmBohemiaLiteraturverwaltung.getContentPane().add(lblHelp, "cell 2 0,alignx right,growy");
 		
 	}
-
-	public void setVisible(boolean b) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

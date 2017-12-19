@@ -1,3 +1,4 @@
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Desktop;
@@ -44,21 +45,6 @@ public class LiteraturErfassen extends JFrame {
 	private JPanel contentPane;
 	private JTextField litTitel;
 
-	/**
-	 * Launch the application.
-	
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					LiteraturErfassen frame = new LiteraturErfassen();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	} */
 
 	/**
 	 * Create the frame.
@@ -204,16 +190,24 @@ public class LiteraturErfassen extends JFrame {
 		contentPane.add(textId, "cell 1 2");
 		
 		/*
-		 * Feld fuer die ISBN
+		 * Feld fuer die Titel
 		 */
+
 		
 		JLabel lblLitTitel = new JLabel("Titel *");
 		contentPane.add(lblLitTitel, "cell 0 3,alignx left,growy");
 		
-		litTitel = new JTextField();
-		contentPane.add(litTitel, "cell 1 3,growx");
-		litTitel.setColumns(10);
-		JLabel lblISBN = new JLabel("ISBN");
+		titel = new JTextField();
+		contentPane.add(titel, "cell 1 3,growx");
+		titel.setColumns(10);
+
+		
+		
+		/*
+		 * Feld fuer die ISBN
+		 */
+		
+		JLabel lblISBN = new JLabel("ISBN *");
 		contentPane.add(lblISBN, "cell 0 4");
 		
 		isbn = new JTextField();
@@ -340,7 +334,7 @@ public class LiteraturErfassen extends JFrame {
 	        	
 	        // Überprüfe, ob die Mussfelder ausgefüllt wurden
 	        	if (titel.getText().equals("") || autor.getText().equals("") || isbn.getText().equals("")){
-	        		JOptionPane.showMessageDialog(null, "Modul konnten nicht gespeichert werdem. Bitte alle Mussfelder ausfüllen.");
+	        		JOptionPane.showMessageDialog(null, "Literatur konnten nicht gespeichert werdem. Bitte alle Mussfelder ausfüllen.");
 	        		return;
 	        	}
 	        	
@@ -349,13 +343,15 @@ public class LiteraturErfassen extends JFrame {
 	        	Statement st = connection.createStatement();
 	        	// Aufbau SQL-Befehl
 		        	try { 
-		        		st.executeUpdate("INSERT INTO literatur  (titel,autor,isbn,herausgeber,auflage,jahr) + VALUES ('"+titel_+"', '"+ autor_+"', '"+ isbn_+"', '" + herausgeber_ +"', '"+ auflage_+ "', 2017)");
+		        		st.executeUpdate("INSERT INTO literatur (titel,autor,isbn,herausgeber,auflage,jahr) VALUES ('"+titel_+"', '"+ autor_+"', '"+ isbn_+"', '" + herausgeber_ +"', '"+ auflage_+ "','"+ jahr_ +"')");
+		        		JOptionPane.showMessageDialog(null, "Die Literatur " + titel_ + " von " + autor_ + " wurde erfoglreich gespeichert.");
 		        		textId.setText("");
 		        		isbn.setText("");
 		        		titel.setText("");
 		        		autor.setText("");
 		        		auflage.setText("");
 		        		herausgeber.setText("");
+		        		jahr.setText("");
 		        	}
 		        	catch (SQLException e) {
 		        		String error = e.getLocalizedMessage();
