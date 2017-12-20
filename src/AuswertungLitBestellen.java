@@ -7,6 +7,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import javax.swing.ImageIcon;
@@ -20,6 +21,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.TableModel;
 
 import net.miginfocom.swing.MigLayout;
 import net.proteanit.sql.DbUtils;
@@ -29,10 +31,17 @@ import javax.swing.JTable;
 import javax.swing.JScrollPane;
 
 import java.sql.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class AuswertungLitBestellen extends JFrame {
 	
 	private JPanel contentPane;
+	
+	private File file;
+	private Date today;
+	private Desktop desktop;
 	
 	private JComboBox<?> person;
 	private JTable table;
@@ -195,6 +204,7 @@ public class AuswertungLitBestellen extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				 int result = JOptionPane.showConfirmDialog((Component) e.getSource(),"Möchten Sie die Liste exportieren und eine Bestellung auslösen?","Warnung", JOptionPane.OK_CANCEL_OPTION);
 				        if (result == JOptionPane.OK_OPTION) {
+				        	exportToExcelFile();
 				        	JOptionPane.showMessageDialog((Component) e.getSource(), "Die Bestellunge wurde erfolgreich erfasst.");
 				        } else if (result == JOptionPane.CANCEL_OPTION) {
 				          System.out.println("Do nothing");
@@ -203,6 +213,43 @@ public class AuswertungLitBestellen extends JFrame {
 		});
 		contentPane.add(btnExportBestellen, "flowx,cell 1 3");
 		contentPane.add(btnZurueck, "cell 1 3,alignx right,aligny center");
+	}
+	
+	public void exportToExcelFile (){
+	    try{
+	        TableModel model = table.getModel();
+	        
+	        DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+	        today = new Date();	        
+	        
+	        File filepath = new File("C:\\Auswertungen");
+	        if(!filepath.exists()) {
+	        	filepath.mkdir();
+	        }
+	        file = new File("C:\\Auswertungen\\" + dateFormat.format(today) + "_LiteraturBestellung.xls");
+	        file.createNewFile();
+	        desktop = Desktop.getDesktop();
+	        desktop.open(filepath);
+
+	        
+	        FileWriter excel = new FileWriter(file);
+
+	        for(int i = 0; i < model.getColumnCount(); i++){
+	            excel.write(model.getColumnName(i) + "\t");
+	        }
+
+	        excel.write("\n");
+
+	        for(int i=0; i< model.getRowCount(); i++) {
+	            for(int j=0; j < model.getColumnCount(); j++) {
+	                excel.write(model.getValueAt(i,j).toString()+"\t");
+	            }
+	            excel.write("\n");
+	        }
+
+	        excel.close();
+
+	    }catch(IOException e){ System.out.println(e); }
 	}
 	
 	public void fillTable() {
