@@ -291,8 +291,6 @@ public class LiteraturErfassen extends JFrame {
 		JButton btnAbbrechen = new JButton("Abbrechen");
 		btnAbbrechen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				Bohemia window = new Bohemia();
-				window.frmBohemiaLiteraturverwaltung.setVisible(true);
 				dispose();
 			}
 		});
@@ -313,7 +311,6 @@ public class LiteraturErfassen extends JFrame {
 	private void addLiteraturToDb () throws SQLException  {
 		
 		// Daten auslesen
-			String id_ = textId.getText();
 			String isbn_ = isbn.getText();
 			String titel_ = titel.getText();
 			String autor_ = autor.getText();

@@ -293,8 +293,6 @@ public class PersonErfassen extends JFrame {
 		JButton btnAbbrechen = new JButton("Abbrechen");
 		btnAbbrechen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				Bohemia window = new Bohemia();
-				window.frmBohemiaLiteraturverwaltung.setVisible(true);
 				dispose();
 			}
 		});
@@ -319,7 +317,6 @@ public class PersonErfassen extends JFrame {
 	 */
 	private void addPersonToDb () throws SQLException  {
 		// Daten auslesen
-			String id_ = id.getText();
 			String nachname_ = nachname.getText();
 			String vorname_ = vorname.getText();
 			String adresse_ = adresse.getText();

@@ -249,8 +249,6 @@ public class ModulErfassen extends JFrame {
 	JButton btnAbbrechen = new JButton("Abbrechen");
 	btnAbbrechen.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent arg0) {
-			Bohemia window = new Bohemia();
-			window.frmBohemiaLiteraturverwaltung.setVisible(true);
 			dispose();
 		}
 	});
