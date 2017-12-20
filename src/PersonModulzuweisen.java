@@ -12,6 +12,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -33,7 +34,10 @@ public class PersonModulzuweisen extends JFrame {
 	private JPanel contentPane;
 
 	private JComboBox person;
-	private JComboBox modul;
+	private JComboBox modul1;
+	private JComboBox modul2;
+	private JComboBox modul3;
+	private JComboBox modul4;
 
 	/**
 	 * Create the frame.
@@ -170,47 +174,164 @@ public class PersonModulzuweisen extends JFrame {
 		
 		person = new JComboBox();
 		contentPane.add(person, "cell 1 2,growx");
+		person.setSelectedIndex(-1);
 		fillComboBoxPerson();
 		
+		
+		
+		/*
+		 * Auswahl Felder für das Modul, max 4
+		 */
+		
+		JLabel lblModul1 = new JLabel("Modul");
+		contentPane.add(lblModul1, "cell 0 4,alignx left,aligny center");
+		
+		modul1 = new JComboBox();
+		contentPane.add(modul1, "cell 1 4,growx");
+		modul1.setSelectedIndex(-1);
+		
+		JLabel lblModul2 = new JLabel("Modul");
+		lblModul2.setVisible(false);
+		contentPane.add(lblModul2, "cell 0 5,alignx left,aligny center");
+		
+		modul2 = new JComboBox();
+		modul2.setVisible(false);
+		contentPane.add(modul2, "cell 1 5,growx");
+		modul2.setSelectedIndex(-1);
+		
+		JLabel lblModul3 = new JLabel("Modul");
+		lblModul3.setVisible(false);
+		contentPane.add(lblModul3, "cell 0 6,alignx left,aligny center");
+		
+		modul3 = new JComboBox();
+		modul3.setVisible(false);
+		contentPane.add(modul3, "cell 1 6,growx");
+		modul3.setSelectedIndex(-1);
+		
+		JLabel lblModul4 = new JLabel("Modul");
+		lblModul4.setVisible(false);
+		contentPane.add(lblModul4, "cell 0 7,alignx left,aligny center");
+		
+		modul4 = new JComboBox();
+		modul4.setVisible(false);
+		contentPane.add(modul4, "cell 1 7,growx");
+		modul4.setSelectedIndex(-1);
+		
+		fillComboBoxModul();
+		
+		
+		/*
+		 * Literaturauwahl hinzufügen und entfernen Button, zusätzliche Buttons sind per default ausgeblendet
+		 */
+		JButton btnPlus1 = new JButton("+");
+		btnPlus1.setVisible(true);
+		contentPane.add(btnPlus1, "flowx,cell 3 4,alignx left,aligny center");
+		JButton btnPlus2 = new JButton("+");
+		btnPlus2.setVisible(false);
+		JButton btnPlus3 = new JButton("+");
+		btnPlus3.setVisible(false);
+		JButton btnMinus1 = new JButton("-");
+		btnMinus1.setVisible(false);
+		JButton btnMinus2 = new JButton("-");
+		btnMinus2.setVisible(false);
+		JButton btnMinus3 = new JButton("-");
+		btnMinus3.setVisible(false);
+		
+		
+		/*
+		 * zusätzliche Auswahl einblenden
+		 */
+		
+		btnPlus1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				lblModul2.setVisible(true);
+				modul2.setVisible(true);
+				btnPlus2.setVisible(true);
+				btnMinus1.setVisible(true);
+			}
+		});
+		contentPane.add(btnPlus2, "flowx,cell 3 5");
+		contentPane.add(btnMinus1, "cell 3 5");
+
+		
+		/*
+		 * zweite zusätzliche Auswahl einblenden oder aktuelle ausblenden
+		 */
+
+		btnPlus2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				lblModul3.setVisible(true);
+				modul3.setVisible(true);
+				btnPlus3.setVisible(true);
+				btnMinus2.setVisible(true);
+			}
+		});
+		contentPane.add(btnPlus3, "flowx,cell 3 6");
+		contentPane.add(btnMinus2, "cell 3 6");
+		
+		btnMinus1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				lblModul2.setVisible(false);
+				modul2.setVisible(false);
+				btnPlus2.setVisible(false);
+				btnMinus1.setVisible(false);
+			}
+		});
 
 		
 		
 		/*
-		 * Zusaetzliche Module hinzufuegen -> max. 4
+		 * dritte zusätzliche Auswahl einblenden oder zweite ausblenden
 		 */
-		JButton btnModulZuweisen = new JButton("Modul hinzuf\u00FCgen");
-		btnModulZuweisen.addActionListener(new ActionListener() {
+		
+		btnPlus3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				lblModul4.setVisible(true);
+				modul4.setVisible(true);
+				btnMinus3.setVisible(true);
 			}
 		});
-		contentPane.add(btnModulZuweisen, "cell 3 2,growx,aligny center");
+		contentPane.add(btnMinus3, "cell 3 7,alignx right");
 		
-		
-		/*
-		 * Auswahl Feld für das Modul
-		 */
-		JLabel lblModul = new JLabel("Modul");
-		contentPane.add(lblModul, "cell 0 4,alignx left,aligny center");
-		
-		modul = new JComboBox();
-		contentPane.add(modul, "cell 1 4,growx");
-		fillComboBoxModul();
-		
-		/*
-		 * Modul entfernen Button
-		 */
-		JButton btnMinus = new JButton("-");
-		btnMinus.addActionListener(new ActionListener() {
+		btnMinus2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				lblModul3.setVisible(false);
+				modul3.setVisible(false);
+				btnPlus3.setVisible(false);
+				btnMinus2.setVisible(false);
 			}
 		});
-		contentPane.add(btnMinus, "cell 3 4");
+
+		
+		/*
+		 * dritte zusätzliche Auswahl ausblenden
+		 */
+		
+		btnMinus3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				lblModul4.setVisible(false);
+				modul4.setVisible(false);
+				btnMinus3.setVisible(false);
+			}
+		});
+		
+		
 		
 		/*
 		 * Speichern Button
 		 */
 		
 		JButton btnSpeichern = new JButton("Speichern");
+		btnSpeichern.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					addModulToPerson ();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
 		contentPane.add(btnSpeichern, "flowx,cell 1 9,alignx left,aligny center");
 		
 		/*
@@ -220,12 +341,137 @@ public class PersonModulzuweisen extends JFrame {
 		JButton btnAbbrechen = new JButton("Abbrechen");
 		btnAbbrechen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				Bohemia window = new Bohemia();
-				window.frmBohemiaLiteraturverwaltung.setVisible(true);
 				dispose();
 			}
 		});
 		contentPane.add(btnAbbrechen, "cell 1 9,alignx right,aligny center");
+	}
+	
+	/*
+	 * Füge die im GUI eingegebenen Daten in die Datenbank hinzu. 
+	 * @author Anna Zhuchkova
+	 * @version 1.0
+	 * @param 
+	 * @return
+	 */
+	private void addModulToPerson () throws SQLException  {
+		//Index und String initialisieren, um ID aus der DB herauszulesen
+		
+				//String Name von Person
+				String pers;
+				//String Nachname und Vorname von Person
+				String pnv;
+				//Index von \0 in Person
+				int persInd;
+				
+				//String Name von Modul1
+				String mod1;
+				//Indes von \0 in Modul1
+				int mod1Ind;
+				
+				//String Name von Modul2
+				String mod2;
+				//Indes von \0 in Modul2
+				int mod2Ind;
+				
+				//String Name von Modul3
+				String mod3;
+				//Indes von \0 in Modul3
+				int mod3Ind;
+				
+				//String Name von Modul4
+				String mod4;
+				//Indes von \0 in Modul4
+				int mod4Ind;
+				
+				
+				// Daten auslesen
+				
+				// Person ID herauslesen
+				pers = (String) person.getSelectedItem();
+				persInd = pers.indexOf("\0");
+				pers = pers.substring(0, persInd);
+				
+				//Person Name und Vorname herauslesen
+				pnv = (String) person.getSelectedItem();
+				pnv = pnv.substring(persInd + 2, pnv.length()-1);
+			
+				
+				//Modul ID herauslesen aus literatur1
+				mod1 = (String) modul1.getSelectedItem();
+				mod1Ind = mod1.indexOf("\0");
+				mod1 = mod1.substring(0, mod1Ind);
+				
+				//Modul ID2 herauslesen, falls weieter Modul vorhanden
+						if(modul2.isVisible()) {
+							mod2 = (String) modul2.getSelectedItem();
+							mod2Ind = mod2.indexOf("\0");
+							mod2 = mod2.substring(0, mod2Ind);
+						}
+						else {
+							mod2 = null;
+						}
+				
+				//Modul ID3 herauslesen, falls weieter Modul vorhanden
+						if(modul3.isVisible()) {
+							mod3 = (String) modul3.getSelectedItem();
+							mod3Ind = mod3.indexOf("\0");
+							mod3 = mod3.substring(0, mod3Ind);
+						}
+						else {
+							mod3 = null;
+						}
+
+				//Modul ID4 herauslesen, falls weieter Modul vorhanden
+						if(modul4.isVisible()) {
+							mod4 = (String) modul4.getSelectedItem();
+							mod4Ind = mod4.indexOf("\0");
+							mod4 = mod4.substring(0, mod4Ind);
+						}
+						else {
+							mod4 = null;
+						}
+		
+		// Verbindung mit Datenbank herstellen
+			String url = "jdbc:mysql://bohemia.mysql.database.azure.com:3306/bohemia?autoReconnect=true&useSSL=false"; 
+	        String username = "myadmin@bohemia"; // DB-Benutzername
+	        String password = "Bohemia2017"; // DB-Passwort	          
+	        
+	        // Überprüfe, ob DB Benutzername und Passwort mitgegeben werden! 
+	        	if (username == "" || password == "") {
+	        		JOptionPane.showMessageDialog(null, "DB username or password is missing!");
+	        		return;
+	        	} 	
+	        	
+	        // Überprüfe, ob die Modul ausgewählt wurde, wenn ja, der Person zuweisen
+	      	
+
+	        try (Connection connection = DriverManager.getConnection(url, username, password)) {
+	        	//Erstelle neues Statement
+	        	Statement st = connection.createStatement();
+	        	int anzahl = 1;
+	        	
+	        	// Aufbau SQL-Befehl
+        		st.executeUpdate("INSERT INTO bohemia.einschreibungen (student_id, modul_id) VALUES ('"+pers+"', '"+mod1+"')");
+		        	
+		        	if(modul2.isVisible()) {
+	        			st.executeUpdate("INSERT INTO bohemia.einschreibungen (student_id,modul_id) VALUES ('"+pers+"', '"+mod2+"')");
+	        			anzahl ++;
+		        	}
+		        	if(modul3.isVisible()) {
+	        			st.executeUpdate("INSERT INTO bohemia.einschreibungen (student_id,modul_id) VALUES ('"+pers+"', '"+mod3+"')");
+	        			anzahl ++;
+		        	}
+		        	if(modul4.isVisible()) {
+		        		st.executeUpdate("INSERT INTO bohemia.einschreibungen (student_id,modul_id) VALUES ('"+pers+"', '"+mod4+"')");
+		        		anzahl ++;
+	        		}
+		        	JOptionPane.showMessageDialog(null, pnv + " wurde(n) erfolgreich " + anzahl + " Modul(e) zugewiesen");
+		        	
+	        	
+	        } catch (SQLException e) {
+	        	JOptionPane.showMessageDialog(null, "Verbindung zur Datenbank ist fehlgeschlagen!");
+	        }
 	}
 	
 	public void fillComboBoxPerson() {
@@ -247,10 +493,8 @@ public class PersonModulzuweisen extends JFrame {
 					ResultSet rs = pst.executeQuery();
 					
 					while(rs.next()) {
-						String temp = rs.getString("nachname");
-						temp += " ";
-						temp += rs.getString("vorname");
-						person.addItem(temp);
+						String anzeige = rs.getString("id") + "\0 " + rs.getString("nachname")+ " " +rs.getString("vorname");
+						person.addItem(anzeige);
 					}
 				}
 				catch (SQLException e) {
@@ -274,15 +518,19 @@ public class PersonModulzuweisen extends JFrame {
 		
 				try {
 					Connection connection = DriverManager.getConnection(url, username, password);
-					String query="SELECT * FROM bohemia.modul order by modul asc";
+					String query="SELECT * FROM bohemia.modul order by kuerzel asc";
 					PreparedStatement pst = connection.prepareStatement(query);
 					ResultSet rs = pst.executeQuery();
 					
 					while(rs.next()) {
-						String temp = rs.getString("kuerzel");
-						temp += " ";
-						temp += rs.getString("modul");
-						modul.addItem(temp);
+						String anzeige1 = rs.getString("id") + "\0 " + rs.getString("kuerzel")+ " " +rs.getString("modul");
+						modul1.addItem(anzeige1);
+						String anzeige2 = rs.getString("id") + "\0 " + rs.getString("kuerzel")+ " " +rs.getString("modul");;
+						modul2.addItem(anzeige2);
+						String anzeige3 = rs.getString("id") + "\0 " + rs.getString("kuerzel")+ " " +rs.getString("modul");
+						modul3.addItem(anzeige3);
+						String anzeige4 = rs.getString("id") + "\0 " + rs.getString("kuerzel")+ " " +rs.getString("modul");
+						modul4.addItem(anzeige4);
 					}
 				}
 				catch (SQLException e) {

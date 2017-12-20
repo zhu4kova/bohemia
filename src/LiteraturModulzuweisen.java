@@ -1,3 +1,4 @@
+import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Font;
 import java.awt.Toolkit;
@@ -11,6 +12,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.TreeMap;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -34,6 +36,13 @@ public class LiteraturModulzuweisen extends JFrame {
 	private JComboBox literatur3;
 	private JComboBox literatur4;
 	
+	private String tempModul;
+	private String tempLit1;
+	private String tempLit2;
+	private String tempLit3;
+	private String tempLit4;
+	
+	private TreeMap <Integer, String> categoryMap = new TreeMap<Integer, String>();
 
 	private JPanel contentPane;
 
@@ -150,7 +159,7 @@ public class LiteraturModulzuweisen extends JFrame {
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
-		contentPane.setLayout(new MigLayout("", "[][200,grow][][]", "[][][][][][][][][][][]"));
+		contentPane.setLayout(new MigLayout("", "[][500.00,grow][grow][]", "[][][][][][][][][][][]"));
 		
 		/*
 		 * Titel der Seite
@@ -169,18 +178,16 @@ public class LiteraturModulzuweisen extends JFrame {
 		
 		modul = new JComboBox();
 		contentPane.add(modul, "cell 1 2,growx,aligny center");
+		modul.setSelectedIndex(-1);
+		
 		fillComboBoxModul();
-		
-		
-		/*
-		 * Feld für die Literaturauswahl aus bestehenden DB Eintraegen -> max. 4
-		 */
 		
 		JLabel lblLiteratur1 = new JLabel("Literatur");
 		contentPane.add(lblLiteratur1, "cell 0 5,alignx left,aligny center");
 		
 		literatur1 = new JComboBox();
 		contentPane.add(literatur1, "cell 1 5,growx");
+		literatur1.setSelectedIndex(-1);
 		
 		JLabel lblLiteratur2 = new JLabel("Literatur");
 		lblLiteratur2.setVisible(false);
@@ -189,6 +196,7 @@ public class LiteraturModulzuweisen extends JFrame {
 		literatur2 = new JComboBox();
 		literatur2.setVisible(false);
 		contentPane.add(literatur2, "cell 1 6,growx");
+		literatur2.setSelectedIndex(-1);
 		
 		JLabel lblLiteratur3 = new JLabel("Literatur");
 		lblLiteratur3.setVisible(false);
@@ -197,6 +205,7 @@ public class LiteraturModulzuweisen extends JFrame {
 		literatur3 = new JComboBox();
 		literatur3.setVisible(false);
 		contentPane.add(literatur3, "cell 1 7,growx");
+		literatur3.setSelectedIndex(-1);
 		
 		JLabel lblLiteratur4 = new JLabel("Literatur");
 		lblLiteratur4.setVisible(false);
@@ -205,14 +214,16 @@ public class LiteraturModulzuweisen extends JFrame {
 		literatur4 = new JComboBox();
 		literatur4.setVisible(false);
 		contentPane.add(literatur4, "cell 1 8,growx");
+		literatur4.setSelectedIndex(-1);
 		
 		fillComboBoxLiteratur();
+		
+
 		
 		/*
 		 * Literaturauwahl hinzufügen und entfernen Button, zusätzliche Buttons sind per default ausgeblendet
 		 */
 		JButton btnPlus1 = new JButton("+");
-		btnPlus1.setVisible(true);
 		contentPane.add(btnPlus1, "flowx,cell 3 5,alignx left,aligny center");
 		JButton btnPlus2 = new JButton("+");
 		btnPlus2.setVisible(false);
@@ -310,6 +321,17 @@ public class LiteraturModulzuweisen extends JFrame {
 		 */
 		
 		JButton btnSpeichern = new JButton("Speichern");
+		btnSpeichern.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					addLiteraturToModul ();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+		});
 		contentPane.add(btnSpeichern, "flowx,cell 1 10,alignx left,aligny center");
 		
 		/*
@@ -319,12 +341,12 @@ public class LiteraturModulzuweisen extends JFrame {
 		JButton btnAbbrechen = new JButton("Abbrechen");
 		btnAbbrechen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				Bohemia window = new Bohemia();
-				window.frmBohemiaLiteraturverwaltung.setVisible(true);
+				tempModul = "";
 				dispose();
 			}
 		});
 		contentPane.add(btnAbbrechen, "cell 1 10,alignx right,aligny center");
+		
 
 		
 	}
@@ -337,12 +359,82 @@ public class LiteraturModulzuweisen extends JFrame {
 	 * @return
 	 */
 	private void addLiteraturToModul () throws SQLException  {
+		//Index und String initialisieren, um ID aus der DB herauszulesen
+		
+		//String Name von Modul
+		String mod;
+		//String Kürzel und Bezeichnung von Modul
+		String mkb;
+		//Index von \0 in Modul
+		int modInd;
+		
+		//String Name von Literatur1
+		String lit1;
+		//Indes von \0 in Literatur1
+		int lit1Ind;
+		
+		//String Name von Literatur2
+		String lit2;
+		//Indes von \0 in Literatur2
+		int lit2Ind;
+		
+		//String Name von Literatur3
+		String lit3;
+		//Indes von \0 in Literatur3
+		int lit3Ind;
+		
+		//String Name von Literatur4
+		String lit4;
+		//Indes von \0 in Literatur4
+		int lit4Ind;
+		
+		
 		// Daten auslesen
-			String modul_ = (String) modul.getSelectedItem();
-			String literatur1_ = (String) literatur1.getSelectedItem();
-			String literatur2_ = (String) literatur2.getSelectedItem();
-			String literatur3_ = (String) literatur3.getSelectedItem();
-			String literatur4_ = (String) literatur4.getSelectedItem();
+		
+		// Modul ID herauslesen
+		mod = (String) modul.getSelectedItem();
+		modInd = mod.indexOf("\0");
+		mod = mod.substring(0, modInd);
+		
+		//Modul Kürzel und Bezeichnung
+		mkb = (String) modul.getSelectedItem();
+		mkb = mkb.substring(modInd + 2, mkb.length()-1);
+	
+		
+		//Literatur ID herauslesen aus literatur1
+		lit1 = (String) literatur1.getSelectedItem();
+		lit1Ind = lit1.indexOf("\0");
+		lit1 = lit1.substring(0, lit1Ind);
+		
+		//Literatur ID2 herauslesen, falls weieter Literatur vorhanden
+				if(literatur2.isVisible()) {
+					lit2 = (String) literatur2.getSelectedItem();
+					lit2Ind = lit2.indexOf("\0");
+					lit2 = lit2.substring(0, lit2Ind);
+				}
+				else {
+					lit2 = null;
+				}
+		
+		//Literatur ID3 herauslesen, falls weieter Literatur vorhanden
+				if(literatur3.isVisible()) {
+					lit3 = (String) literatur3.getSelectedItem();
+					lit3Ind = lit3.indexOf("\0");
+					lit3 = lit3.substring(0, lit3Ind);
+				}
+				else {
+					lit3 = null;
+				}
+
+		//Literatur ID4 herauslesen, falls weieter Literatur vorhanden
+				if(literatur4.isVisible()) {
+					lit4 = (String) literatur4.getSelectedItem();
+					lit4Ind = lit4.indexOf("\0");
+					lit4 = lit4.substring(0, lit4Ind);
+				}
+				else {
+					lit4 = null;
+				}
 		
 		// Verbindung mit Datenbank herstellen
 			String url = "jdbc:mysql://bohemia.mysql.database.azure.com:3306/bohemia?autoReconnect=true&useSSL=false"; 
@@ -354,10 +446,7 @@ public class LiteraturModulzuweisen extends JFrame {
 	        		JOptionPane.showMessageDialog(null, "DB username or password is missing!");
 	        		return;
 	        	}
-	        	
-	        // Lese die id des Moduls und der Literatur heraus ?????????wie????????
-	        	
-	        	
+
 	        	
 	        // Überprüfe, ob die Literatur ausgewählt wurde, wenn ja, dem Modul zuweisen
 	      	
@@ -365,47 +454,26 @@ public class LiteraturModulzuweisen extends JFrame {
 	        try (Connection connection = DriverManager.getConnection(url, username, password)) {
 	        	//Erstelle neues Statement
 	        	Statement st = connection.createStatement();
+	        	int anzahl = 1;
 	        	
 	        	// Aufbau SQL-Befehl
-		        	try { 
-		        		st.executeUpdate("INSERT INTO bohemia.modul_hat_literatur (modul_id,) VALUES ('"+modul_+"', '"+literatur1_+"')");
-		        		JOptionPane.showMessageDialog(null, modul_ + " " + literatur1_ + " wurde erfolgreich erfasst.");
-		        	}
-		        	catch (SQLException e) {
-		        		String error = e.getLocalizedMessage();
-		        		JOptionPane.showMessageDialog(null, error);
-		        	}
+	        	
+	        	
+	        		st.executeUpdate("INSERT INTO bohemia.modul_hat_literatur (modul_id,literatur_id) VALUES ('"+mod+"', '"+lit1+"')");
 		        	
-		        	if(literatur2.isVisible()) {
-		        		try {
-		        			st.executeUpdate("INSERT INTO bohemia.modul_hat_literatur (modul_id,) VALUES ('"+modul_+"', '"+literatur2_+"')");
-		        			JOptionPane.showMessageDialog(null, modul_ + " " + literatur1_ + " wurde erfolgreich erfasst.");
-		        		}
-		        		catch (SQLException e) {
-			        		String error = e.getLocalizedMessage();
-			        		JOptionPane.showMessageDialog(null, error);
-			        	}
+		        	if(lit2 != null) {
+		        		st.executeUpdate("INSERT INTO bohemia.modul_hat_literatur (modul_id,literatur_id) VALUES ('"+mod+"', '"+lit2+"')");
+		        		anzahl ++;
 		        	}
-		        	else if(literatur3.isVisible()) {
-		        		try {
-		        			st.executeUpdate("INSERT INTO bohemia.modul_hat_literatur (modul_id,) VALUES ('"+modul_+"', '"+literatur3_+"')");
-			        		JOptionPane.showMessageDialog(null, modul_ + " " + literatur1_ + " wurde erfolgreich erfasst.");
-		        		}
-		        		catch (SQLException e) {
-			        		String error = e.getLocalizedMessage();
-			        		JOptionPane.showMessageDialog(null, error);
-			        	}
+		        	if(lit3 != null) {
+		        		st.executeUpdate("INSERT INTO bohemia.modul_hat_literatur (modul_id,literatur_id) VALUES ('"+mod+"', '"+lit3+"')");
+		        		anzahl ++;
 		        	}
-		        	else if(literatur4.isVisible()) {
-		        		try {
-			        		st.executeUpdate("INSERT INTO bohemia.modul_hat_literatur (modul_id,) VALUES ('"+modul_+"', '"+literatur4_+"')");
-			        		JOptionPane.showMessageDialog(null, modul_ + " " + literatur1_ + " wurde erfolgreich erfasst.");
-		        		}
-		        		catch (SQLException e) {
-			        		String error = e.getLocalizedMessage();
-			        		JOptionPane.showMessageDialog(null, error);
-			        	}
+		        	if(lit4 != null) {
+		        		st.executeUpdate("INSERT INTO bohemia.modul_hat_literatur (modul_id,literatur_id) VALUES ('"+mod+"', '"+lit4+"')");
+		        		anzahl ++;
 		        	}
+	        		JOptionPane.showMessageDialog(null, "Folgende Anzahl an Literatur wurde dem Modul " + mkb + " zugewiesen: " + anzahl);
 		        	
 	        	
 	        } catch (SQLException e) {
@@ -438,12 +506,15 @@ public class LiteraturModulzuweisen extends JFrame {
 					String query="SELECT * FROM bohemia.literatur order by titel asc";
 					PreparedStatement pst = connection.prepareStatement(query);
 					ResultSet rs = pst.executeQuery();
-					
 					while(rs.next()) {
-						literatur1.addItem("titel");
-						literatur2.addItem("titel");
-						literatur3.addItem("titel");
-						literatur4.addItem("titel");
+						String anzeige1 = rs.getString("id") + "\0 " + rs.getString("titel") + " von " + rs.getString("autor");
+						literatur1.addItem(anzeige1);
+						String anzeige2 = rs.getString("id") + "\0 " + rs.getString("titel") + " von " + rs.getString("autor");
+						literatur2.addItem(anzeige2);
+						String anzeige3 = rs.getString("id") + "\0 " + rs.getString("titel") + " von " + rs.getString("autor");
+						literatur3.addItem(anzeige3);
+						String anzeige4 = rs.getString("id") + "\0 " + rs.getString("titel") + " von " + rs.getString("autor");
+						literatur4.addItem(anzeige4);
 					}
 				}
 				catch (SQLException e) {
@@ -475,16 +546,16 @@ public class LiteraturModulzuweisen extends JFrame {
 		
 				try {
 					Connection connection = DriverManager.getConnection(url, username, password);
-					String query="SELECT * FROM bohemia.modul order by modul asc";
+					String query="SELECT * FROM bohemia.modul order by kuerzel asc";
 					PreparedStatement pst = connection.prepareStatement(query);
 					ResultSet rs = pst.executeQuery();
 					
 					while(rs.next()) {
-						String temp = rs.getString("kuerzel");
-						temp += " ";
-						temp += rs.getString("modul");
-						modul.addItem(temp);
+						String anzeige = rs.getString("id") + "\0 - " + rs.getString("kuerzel")+ " " +rs.getString("modul");
+						modul.addItem(anzeige);
 					}
+
+
 				}
 				catch (SQLException e) {
 					String error = e.getLocalizedMessage();

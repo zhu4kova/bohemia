@@ -165,8 +165,6 @@ public class AuswertungLitBestellen extends JFrame {
 		JButton btnZurueck = new JButton("Zurück zur Startseite");
 		btnZurueck.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				Bohemia window = new Bohemia();
-				window.frmBohemiaLiteraturverwaltung.setVisible(true);
 				dispose();
 			}
 		});
@@ -221,7 +219,31 @@ public class AuswertungLitBestellen extends JFrame {
 		
 				try {
 					Connection connection = DriverManager.getConnection(url, username, password);
-					String query="SELECT * FROM bohemia.modul order by modul asc";
+					String query="\r\n" + 
+							"\r\n" + 
+							"SELECT s.nachname, s.vorname,\r\n" + 
+							" s.adresse,\r\n" + 
+							" s.plz,\r\n" + 
+							" s.ort,\r\n" + 
+							" c.land, l.titel,\r\n" + 
+							" l.autor,\r\n" + 
+							" l.isbn,\r\n" + 
+							" l.herausgeber,\r\n" + 
+							" l.auflage,\r\n" + 
+							" l.jahr\r\n" + 
+							" FROM bohemia.student s \r\n" + 
+							"\r\n" + 
+							"JOIN bohemia.einschreibungen e on s.id = e.student_id\r\n" + 
+							"\r\n" + 
+							"JOIN bohemia.modul m on e.modul_id = m.id\r\n" + 
+							"\r\n" + 
+							"JOIN bohemia.modul_hat_literatur mhl on m.id = mhl.modul_id\r\n" + 
+							"\r\n" + 
+							"JOIN bohemia.literatur l on l.id = mhl.literatur_id\r\n" + 
+							"\r\n" + 
+							"JOIN bohemia.land c on s.land_id = c.id\r\n" + 
+							"\r\n" + 
+							"WHERE (s.id, l.id) not in (SELECT student_id, literatur_id from bohemia.literatur_bestellung);\r\n";
 					PreparedStatement pst = connection.prepareStatement(query);
 					ResultSet rs = pst.executeQuery();
 					table.setModel(DbUtils.resultSetToTableModel(rs));
